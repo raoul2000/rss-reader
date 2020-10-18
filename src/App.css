@@ -15,11 +15,12 @@
 .body {
   display: flex;
   flex: 1;
+  height: calc(1vh - 100px);
 }
-.body > nav,
-.body > main {
+.body > nav {
   padding :0.2em;
 }
+
 .source-list {
   /* 12em is the width of the columns */
   flex: 1;
@@ -27,6 +28,7 @@
   max-width: 15em;
   overflow-y: scroll;
   font-size: smaller;
+  border-right: 2px solid #f1f1f1;
 }
 
 .source-item {
@@ -37,11 +39,15 @@
   flex: 1.5;
   min-width: 10em;
   max-width: 20em;
-  overflow-y: scroll;
+  border-right: 2px solid #f1f1f1;
 }
 .source-list .selected,
 .result-list .selected {
   background-color: #b0e6ff;
+}
+.resultListItems {
+  height: calc(100vh - 149px);
+  overflow-y: auto;
 }
 .rss-item {
   cursor: pointer;
@@ -54,5 +60,6 @@
 }
 .result-detail {
   flex: 3;
+  padding:1em;
 }
 
