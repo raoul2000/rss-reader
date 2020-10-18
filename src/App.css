@@ -3,10 +3,13 @@
   min-height: 100vh;
   flex-direction: column;
 }
-
+.app header {
+  padding: 0.5em;
+  font-weight: 500;
+}
 .app header,
 .app footer {
-  background-color: tan;
+  background-color: rgb(241 241 241);
 }
 
 .body {
@@ -20,38 +23,36 @@
 .source-list {
   /* 12em is the width of the columns */
   flex: 1;
-  background-color: cornflowerblue;
   min-width: 10em;
   max-width: 15em;
+  overflow-y: scroll;
+  font-size: smaller;
 }
-.source-list .selected {
-  background-color: #03A9F4;
-}
+
 .source-item {
   cursor: pointer;
 }
-.source-item:hover {
-  background-color: #5cc8fa;
-}
+
 .result-list {
   flex: 1.5;
-  background-color: darksalmon;
   min-width: 10em;
   max-width: 20em;
+  overflow-y: scroll;
 }
+.source-list .selected,
 .result-list .selected {
-  background-color: yellow;
+  background-color: #b0e6ff;
 }
 .rss-item {
   cursor: pointer;
   
 }
+.source-item:hover,
 .rss-item:hover {
-  background-color: rgb(255, 255, 164);
+  background-color: #74d3ff
 
 }
 .result-detail {
   flex: 3;
-  background-color: wheat;
 }
 
