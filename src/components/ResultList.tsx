@@ -34,13 +34,12 @@ const ResultList: React.FC<Props> = (props: Props) => {
     };
     // load RSS Document each time the selected RSS source Id changes
     useEffect(handleLoadRssDocument, [selectedSourceId])
-    console.log(rssDocument);
+
     return (
         <div id="resultList">
             <h3>
                 {selectedSource?.label}
             </h3>
-            <button onClick={() => handleLoadRssDocument()}>Refresh</button>
             <div className="resultListItems">
                 {rssLoadingStatus === RssReadStatus.PENDING && <div>loading ...</div>}
                 {rssLoadingStatus === RssReadStatus.ERROR && <div>{rssLoadErrorMessage}</div>}

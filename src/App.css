@@ -33,6 +33,14 @@
 
 .source-item {
   cursor: pointer;
+  display: flex;
+  padding: 0.4em;
+}
+.source-item .source-label {
+  flex-grow: 1;
+}
+.source-item .refresh {
+  flex-grow: 0;
 }
 
 .result-list {
@@ -46,7 +54,7 @@
   background-color: #b0e6ff;
 }
 .resultListItems {
-  height: calc(100vh - 149px);
+  height: calc(100vh - 124px);
   overflow-y: auto;
 }
 .rss-item {
@@ -62,4 +70,35 @@
   flex: 3;
   padding:1em;
 }
+/* loader */
+.refresh {
+  display: inline-block;
+}
+.refresh:after {
+  content: " ";
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  border-color: #144ae2;
+  float: right;
+}
+.refresh-pending:after {
+  border-color: #fff0 #144ae2 #ffffff03 #144ae2;
+  animation: refresh 0.5s linear infinite;
+}
+.refresh-error:after {
+  border-color: rgb(223, 17, 17);
+}
+@keyframes refresh {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
 

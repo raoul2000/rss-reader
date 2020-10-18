@@ -7,7 +7,8 @@ import SourceListItem from './SourceListItem'
 
 const mapState = (state: RootState) => ({
     rssSources: state.rssSource.rssSources,
-    selectedSourceId: state.rssSource.selectedRssSourceId
+    selectedSourceId: state.rssSource.selectedRssSourceId,
+    refresh: state.rssSource.readStatus,
 })
 const mapDispatch = {
     select: (id: RssSourceId) => selectRssSource(id)
@@ -16,7 +17,7 @@ const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux
 
-const SourceList: React.FC<Props> = ({ rssSources, selectedSourceId }: Props) => {
+const SourceList: React.FC<Props> = ({ rssSources, selectedSourceId, refresh }: Props) => {
     return (
         <div id="sourceList">
             {rssSources && rssSources.map((source) => (
@@ -24,6 +25,7 @@ const SourceList: React.FC<Props> = ({ rssSources, selectedSourceId }: Props) =>
                     key={source.id}
                     source={source}
                     isSelected={source.id === selectedSourceId}
+                    refresh={source.id === selectedSourceId && refresh}
                 />
             ))}
         </div>
