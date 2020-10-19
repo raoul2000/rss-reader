@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { connect, ConnectedProps } from 'react-redux'
+import { connect, ConnectedProps, useSelector } from 'react-redux'
 import { RootState } from '../store'
 import { loadRssDocument } from '../store/rss-source/actions'
-import { getSelectedRssSource } from '../store/rss-source/reducers'
+import { getSelectedRssSource, getRssDocumentFromCache } from '../store/rss-source/reducers'
 import { RssSource, RssReadStatus } from '../store/rss-source/types'
 import ResultListItem from './ResultListItem'
 
@@ -24,6 +24,12 @@ type Props = PropsFromRedux
 const ResultList: React.FC<Props> = (props: Props) => {
     const { selectedSourceId, selectedSource, rssDocument, rssLoadingStatus, rssLoadErrorMessage, loadRss, selectedItemId } = props;
 
+    const rssDocumentCacheItem = useSelector<RootState>( state => {
+        if (selectedSource) {
+            return getRssDocumentFromCache(state.rssSource,selectedSource.id )
+        }
+        return null;
+    })
     /**
      * Trigger the loadRss Action
      */

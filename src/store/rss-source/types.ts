@@ -11,6 +11,9 @@ export const LOAD_RSS_DOCUMENT = "@rssSource/LOAD_RSS_DOCUMENT";
 export const SET_RSS_DOCUMENT = "@rssSource/SET_RSS_DOCUMENT";
 export const SELECT_RSS_ITEM = "@rssSource/SELECT_RSS_ITEM";
 
+export const ADD_RSS_DOCUMENT_TO_CACHE = "@rssSource/ADD_RSS_DOCUMENT_TO_CACHE";
+export const REMOVE_RSS_DOCUMENT_FROM_CACHE = "@rssSource/REMOVE_RSS_DOCUMENT_FROM_CACHE";
+
 export type RssSourceId = string;
 export type RssItemId = string;
 
@@ -62,7 +65,10 @@ export interface RssDocument {
     title?: string;
     items: Item[];
 }
-
+export interface RssDocumentCacheItem {
+    rssSourceId:RssSourceId,
+    rssDocument: RssDocument
+}
 export interface RssSourceState {
     /**
      * The list of RSS sources currently loaded in the app. 
@@ -93,6 +99,10 @@ export interface RssSourceState {
      * Id of the RSS item currently selected or `undefined` if no RSS item is selected
      */
     selectedRssItemId: RssItemId | undefined
+    /**
+     * Stores RSS Documents already loaded
+     */
+    rssDocumentCache: RssDocumentCacheItem[]
 }
 interface SelectRssSourceAction extends Action {
     type: typeof SELECT_RSS_SOURCE,
@@ -144,5 +154,20 @@ interface SelectRssItemAction extends Action {
         id?: RssItemId
     }
 }
+
+interface AddRssDocumentToCacheAction extends Action {
+    type: typeof ADD_RSS_DOCUMENT_TO_CACHE,
+    payload: {
+        rssSourceId: RssSourceId,
+        rssDocument: RssDocument
+    }
+}
+
+interface RemoveRssDocumentFromCacheAction extends Action {
+    type: typeof REMOVE_RSS_DOCUMENT_FROM_CACHE,
+    payload: {
+        rssSourceId: RssSourceId
+    }
+}
 export type RssActionTypes = SelectRssSourceAction | AddRssSourceAction | DeleteRssSourceAction | SetRssDocumentAction | LoadRssSocumentAction
-    | setRssLoadingPendingAction | setRssLoadingSuccessAction | setRssLoadingErrorAction | SelectRssItemAction;
+    | setRssLoadingPendingAction | setRssLoadingSuccessAction | setRssLoadingErrorAction | SelectRssItemAction | AddRssDocumentToCacheAction | RemoveRssDocumentFromCacheAction;

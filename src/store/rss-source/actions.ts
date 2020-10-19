@@ -1,8 +1,8 @@
 import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 import { AnyAction } from 'redux';
 import {
-    RssActionTypes, RssSourceId, RssSource, RssItemId, RssDocument, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, SET_RSS_DOCUMENT,
-    LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM
+    RssActionTypes, RssSourceId, RssSource, RssItemId, RssDocument, RssDocumentCacheItem, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, SET_RSS_DOCUMENT,
+    LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM, ADD_RSS_DOCUMENT_TO_CACHE, REMOVE_RSS_DOCUMENT_FROM_CACHE
 } from './types'
 import {fetchRssDocument} from '../../lib/rss-loader';
 
@@ -83,10 +83,31 @@ export function loadRssDocument(rssSource: RssSource): ThunkAction<void, {}, {},
             .then((result) => {
                 dispatch(setRssLoadingSuccess());
                 dispatch(setRssDocument(result));
+                dispatch(addRssDocumentToCache({rssSourceId: rssSource.id, rssDocument: result}))
             })
             .catch(error => {
                 dispatch(setRssLoadingError(error.message));
                 dispatch(setRssDocument());
             })
+    }
+}
+/**
+ * Add a RSS Document Item to cache. If an item with the same `rssSourceId` is present in the
+ * cache, then it is updated
+ * @param item the Rss Document cache item to add
+ */
+export function addRssDocumentToCache(item:RssDocumentCacheItem):RssActionTypes {
+    return {
+        type: ADD_RSS_DOCUMENT_TO_CACHE,
+        payload: item
+    }
+}
+
+export function removeRssDocumentFromCache(rssSourceId: RssSourceId):RssActionTypes {
+    return {
+        type: REMOVE_RSS_DOCUMENT_FROM_CACHE,
+        payload: {
+            rssSourceId
+        }
     }
 }
