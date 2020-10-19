@@ -70,8 +70,8 @@ export function rssSourceReducer(
                 selectedRssItemId: action.payload.id
             }
         case ADD_RSS_DOCUMENT_TO_CACHE:
-            let alreadyInCache = false;
-            const updatedCache = [...state.rssDocumentCache]
+            let alreadyInCache:boolean = false;
+            const updatedCache:Array<RssDocumentCacheItem> = [...state.rssDocumentCache]
                 .map( item => {
                     if(item.rssSourceId === action.payload.rssSourceId) {
                         alreadyInCache = true;

@@ -2,9 +2,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux'
 import { selectRssSource, loadRssDocument } from '../store/rss-source/actions'
 import { RssSourceId, RssSource, RssReadStatus } from '../store/rss-source/types'
-import { RootState } from '../store'
 import classNames from 'classnames';
-
 
 const mapDispatch = {
     selectSource: (id: RssSourceId) => selectRssSource(id),

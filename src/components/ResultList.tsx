@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { connect, ConnectedProps, useSelector } from 'react-redux'
+import { connect, ConnectedProps, useSelector, TypedUseSelectorHook } from 'react-redux'
 import { RootState } from '../store'
-import { loadRssDocument } from '../store/rss-source/actions'
+import { loadRssDocument, setRssDocument } from '../store/rss-source/actions'
 import { getSelectedRssSource, getRssDocumentFromCache } from '../store/rss-source/reducers'
-import { RssSource, RssReadStatus } from '../store/rss-source/types'
+import { RssSource, RssReadStatus, RssDocumentCacheItem } from '../store/rss-source/types'
 import ResultListItem from './ResultListItem'
 
 const mapState = (state: RootState) => ({
@@ -15,18 +15,19 @@ const mapState = (state: RootState) => ({
     selectedItemId: state.rssSource.selectedRssItemId
 })
 const mapDispatch = {
-    loadRss: (rssSource: RssSource) => loadRssDocument(rssSource)
+    loadRss: (rssSource: RssSource) => loadRssDocument(rssSource),
+    setRssDocument
 }
 const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux
 
 const ResultList: React.FC<Props> = (props: Props) => {
-    const { selectedSourceId, selectedSource, rssDocument, rssLoadingStatus, rssLoadErrorMessage, loadRss, selectedItemId } = props;
+    const { selectedSourceId, selectedSource, rssDocument, rssLoadingStatus, rssLoadErrorMessage, loadRss, setRssDocument, selectedItemId } = props;
 
-    const rssDocumentCacheItem = useSelector<RootState>( state => {
+    const rssDocumentCacheItem: RssDocumentCacheItem | null = useSelector<RootState, RssDocumentCacheItem | null>((state: RootState) => {
         if (selectedSource) {
-            return getRssDocumentFromCache(state.rssSource,selectedSource.id )
+            return getRssDocumentFromCache(state.rssSource, selectedSource.id)
         }
         return null;
     })
@@ -35,12 +36,16 @@ const ResultList: React.FC<Props> = (props: Props) => {
      */
     const handleLoadRssDocument = () => {
         if (selectedSource) {
-            loadRss(selectedSource);
+            if (!rssDocumentCacheItem) {
+                loadRss(selectedSource);
+            } else {
+                setRssDocument(rssDocumentCacheItem.rssDocument)
+            }
         }
     };
     // load RSS Document each time the selected RSS source Id changes
     useEffect(handleLoadRssDocument, [selectedSourceId])
-
+    console.log(rssDocument);
     return (
         <div id="resultList">
             <h3>

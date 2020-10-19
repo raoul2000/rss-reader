@@ -77,7 +77,6 @@ export function selectRssItem(id?: RssItemId): RssActionTypes {
  */
 export function loadRssDocument(rssSource: RssSource): ThunkAction<void, {}, {}, AnyAction> {
     return (dispatch: ThunkDispatch<{}, {}, AnyAction>): void => {
-
         dispatch(setRssLoadingPending());
         fetchRssDocument(rssSource.url)
             .then((result) => {
