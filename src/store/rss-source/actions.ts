@@ -1,7 +1,7 @@
 import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 import { AnyAction } from 'redux';
 import {
-    RssActionTypes, RssSourceId, RssSource, RssItemId, RssDocument, RssDocumentCacheItem, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, SET_RSS_DOCUMENT,
+    RssActionTypes, RssSourceId, RssSource, RssItemId, RssDocument, RssReadStatus, RssDocumentCacheItem, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, SET_RSS_DOCUMENT,
     LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM, ADD_RSS_DOCUMENT_TO_CACHE, REMOVE_RSS_DOCUMENT_FROM_CACHE
 } from './types'
 import {fetchRssDocument} from '../../lib/rss-loader';
@@ -82,7 +82,7 @@ export function loadRssDocument(rssSource: RssSource): ThunkAction<void, {}, {},
             .then((result) => {
                 dispatch(setRssLoadingSuccess());
                 dispatch(setRssDocument(result));
-                dispatch(addRssDocumentToCache({rssSourceId: rssSource.id, rssDocument: result}))
+                dispatch(addRssDocumentToCache({rssSourceId: rssSource.id, rssDocument: result, readStatus: RssReadStatus.SUCCESS}))
             })
             .catch(error => {
                 dispatch(setRssLoadingError(error.message));
@@ -110,3 +110,19 @@ export function removeRssDocumentFromCache(rssSourceId: RssSourceId):RssActionTy
         }
     }
 }
+
+/* export function refreshRssDocument(rssSourceId: RssSourceId): ThunkAction<void, {}, {}, AnyAction> {
+    return (dispatch: ThunkDispatch<{}, {}, AnyAction>): void => {
+        dispatch(setRssLoadingPending());
+        fetchRssDocument(rssSource.url)
+            .then((result) => {
+                dispatch(setRssLoadingSuccess());
+                dispatch(setRssDocument(result));
+                dispatch(addRssDocumentToCache({rssSourceId: rssSource.id, rssDocument: result, readStatus: RssReadStatus.SUCCESS}))
+            })
+            .catch(error => {
+                dispatch(setRssLoadingError(error.message));
+                dispatch(setRssDocument());
+            })
+    }
+} */

@@ -108,7 +108,6 @@ export const getSelectedRssSource = (state:RssSourceState) => {
         return getRssSourceById(state, selectedRssSourceId);
     }
     return null;
-
 }
 export const getRssSourceById = (state: RssSourceState, sourceId: RssSourceId) => {
     const { rssSources } = state;
@@ -124,7 +123,12 @@ export const getRssItemById = (state: RssSourceState) => {
     }
     return null;
 } 
-
+/**
+ * Returns the Document for a given RSS Source or NULL if this Document has not been loaded
+ * 
+ * @param state the current state
+ * @param rssSourceId the Rss Source Id
+ */
 export const getRssDocumentFromCache = (state:RssSourceState, rssSourceId: RssSourceId): RssDocumentCacheItem | null => {
     const {rssDocumentCache} = state;
     return rssDocumentCache.find( item => item.rssSourceId === rssSourceId) || null;

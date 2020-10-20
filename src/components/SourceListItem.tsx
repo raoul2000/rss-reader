@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux'
 import { selectRssSource, loadRssDocument } from '../store/rss-source/actions'
-import { RssSourceId, RssSource, RssReadStatus } from '../store/rss-source/types'
+import { RssSource, RssReadStatus } from '../store/rss-source/types'
 import classNames from 'classnames';
 
 const mapDispatch = {
-    selectSource: (id: RssSourceId) => selectRssSource(id),
+    selectRssSource,
     loadRssDocument
 }
 
@@ -17,10 +17,10 @@ type Props = PropsFromRedux & {
     refresh: RssReadStatus | boolean | undefined
 }
 
-const SourceListItem: React.FC<Props> = ({ source, selectSource, loadRssDocument, isSelected, refresh}: Props) => {
+const SourceListItem: React.FC<Props> = ({ source, selectRssSource, loadRssDocument, isSelected, refresh}: Props) => {
 
-    const handleClickOnRssSource = () => {
-        selectSource(source.id);
+    const doSelectRssSource = () => {
+        selectRssSource(source.id);
     };
     const itemClassName: string = classNames({
         'source-item': true,
@@ -31,19 +31,22 @@ const SourceListItem: React.FC<Props> = ({ source, selectSource, loadRssDocument
         'refresh-pending': refresh === RssReadStatus.PENDING,
         'refresh-error': refresh === RssReadStatus.ERROR
     });
-    const handleClickRefresh = (e:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const doRefreshRssSource = (e:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation();
+
         // for now refresh and selection are equivalent : they both triggers the
         // loadRssDocument action
-        handleClickOnRssSource();
+        //doSelectRssSource();
 
-        //loadRssDocument(source);
-        //e.stopPropagation();
+        loadRssDocument(source);
+        selectRssSource(source.id)
+        //refreshRssDocument(source.id);
     };
     return (
         <div
             key={source.id}
             className={itemClassName}
-            onClick={handleClickOnRssSource}
+            onClick={doSelectRssSource}
         >
             <div className="source-label">
                 {source.label}
@@ -52,7 +55,7 @@ const SourceListItem: React.FC<Props> = ({ source, selectSource, loadRssDocument
                 <div 
                     title="refresh"
                     className={refreshClassName} 
-                    onClick={handleClickRefresh}
+                    onClick={doRefreshRssSource}
                 >    
                 </div>
             </div>
