@@ -67,8 +67,9 @@ export interface RssDocument {
 }
 export interface RssDocumentCacheItem {
     rssSourceId:RssSourceId,
-    rssDocument: RssDocument,
-    readStatus:RssReadStatus
+    rssDocument: RssDocument | null,
+    readStatus:RssReadStatus | null,
+    loadErrorMessage: string | null
 }
 export interface RssSourceState {
     /**
@@ -132,15 +133,20 @@ interface SetRssDocumentAction extends Action {
 }
 interface setRssLoadingPendingAction extends Action {
     type: typeof LOAD_RSS_PENDING,
-    payload: {}
+    payload: {
+        rssSourceId: RssSourceId
+    }
 }
 interface setRssLoadingSuccessAction extends Action {
     type: typeof LOAD_RSS_SUCCESS,
-    payload: {}
+    payload: {
+        rssSourceId: RssSourceId
+    }
 }
 interface setRssLoadingErrorAction extends Action {
     type: typeof LOAD_RSS_ERROR,
     payload: {
+        rssSourceId: RssSourceId,
         message: string
     }
 }

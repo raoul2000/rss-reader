@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
-import { connect, ConnectedProps, useSelector, TypedUseSelectorHook } from 'react-redux'
+import { connect, ConnectedProps, useSelector } from 'react-redux'
 import { RootState } from '../store'
 import { loadRssDocument, setRssDocument } from '../store/rss-source/actions'
-import { getSelectedRssSource, getRssDocumentFromCache } from '../store/rss-source/reducers'
+import { getSelectedRssSource, getRssDocumentFromCache, getSelectedRssDocument } from '../store/rss-source/reducers'
 import { RssSource, RssReadStatus, RssDocumentCacheItem } from '../store/rss-source/types'
 import ResultListItem from './ResultListItem'
 
 const mapState = (state: RootState) => ({
     selectedSourceId: state.rssSource.selectedRssSourceId,
     selectedSource: getSelectedRssSource(state.rssSource),
-    rssDocument: state.rssSource.rssDocument,
+    rssDocument: getSelectedRssDocument(state.rssSource),
     rssLoadingStatus: state.rssSource.readStatus,
     rssLoadErrorMessage: state.rssSource.readErrorMessage,
     selectedItemId: state.rssSource.selectedRssItemId
@@ -38,10 +38,11 @@ const ResultList: React.FC<Props> = (props: Props) => {
         if (selectedSource) {
             if (!rssDocumentCacheItem) {
                 loadRss(selectedSource);
-            } else {
+            } 
+/*             else {
                 setRssDocument(rssDocumentCacheItem.rssDocument)
             }
-        }
+ */        }
     };
     // load RSS Document each time the selected RSS source Id changes
     useEffect(handleLoadRssDocument, [selectedSourceId])
@@ -54,7 +55,7 @@ const ResultList: React.FC<Props> = (props: Props) => {
             <div className="resultListItems">
                 {rssLoadingStatus === RssReadStatus.PENDING && <div>loading ...</div>}
                 {rssLoadingStatus === RssReadStatus.ERROR && <div>{rssLoadErrorMessage}</div>}
-                {rssDocument && rssDocument.items?.map(item => (
+                {rssDocument && rssDocument.rssDocument.items?.map(item => (
                     <ResultListItem key={item.id} rssItem={item} isSelected={selectedItemId === item.id} />
                 ))}
             </div>

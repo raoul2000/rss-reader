@@ -31,7 +31,7 @@ const SourceListItem: React.FC<Props> = ({ source, selectRssSource, loadRssDocum
         'refresh-pending': refresh === RssReadStatus.PENDING,
         'refresh-error': refresh === RssReadStatus.ERROR
     });
-    const doRefreshRssSource = (e:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const doLoadRssDocument = (e:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
 
         // for now refresh and selection are equivalent : they both triggers the
@@ -39,7 +39,7 @@ const SourceListItem: React.FC<Props> = ({ source, selectRssSource, loadRssDocum
         //doSelectRssSource();
 
         loadRssDocument(source);
-        selectRssSource(source.id)
+        //selectRssSource(source.id)
         //refreshRssDocument(source.id);
     };
     return (
@@ -55,7 +55,7 @@ const SourceListItem: React.FC<Props> = ({ source, selectRssSource, loadRssDocum
                 <div 
                     title="refresh"
                     className={refreshClassName} 
-                    onClick={doRefreshRssSource}
+                    onClick={doLoadRssDocument}
                 >    
                 </div>
             </div>

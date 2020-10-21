@@ -38,22 +38,27 @@ export function setRssDocument(rssDocument?: RssDocument): RssActionTypes {
         }
     }
 }
-export function setRssLoadingPending(): RssActionTypes {
+export function setRssLoadingPending(rssSourceId: RssSourceId): RssActionTypes {
     return {
         type: LOAD_RSS_PENDING,
-        payload: {}
+        payload: {
+            rssSourceId
+        }
     }
 }
-export function setRssLoadingSuccess(): RssActionTypes {
+export function setRssLoadingSuccess(rssSourceId: RssSourceId): RssActionTypes {
     return {
         type: LOAD_RSS_SUCCESS,
-        payload: {}
+        payload: {
+            rssSourceId
+        }
     }
 }
-export function setRssLoadingError(message: string): RssActionTypes {
+export function setRssLoadingError(rssSourceId: RssSourceId, message: string): RssActionTypes {
     return {
         type: LOAD_RSS_ERROR,
         payload: {
+            rssSourceId,
             message
         }
     }
@@ -77,16 +82,16 @@ export function selectRssItem(id?: RssItemId): RssActionTypes {
  */
 export function loadRssDocument(rssSource: RssSource): ThunkAction<void, {}, {}, AnyAction> {
     return (dispatch: ThunkDispatch<{}, {}, AnyAction>): void => {
-        dispatch(setRssLoadingPending());
+        dispatch(setRssLoadingPending(rssSource.id));
         fetchRssDocument(rssSource.url)
             .then((result) => {
-                dispatch(setRssLoadingSuccess());
-                dispatch(setRssDocument(result));
+                dispatch(setRssLoadingSuccess(rssSource.id));
+                //dispatch(setRssDocument(result));
                 dispatch(addRssDocumentToCache({rssSourceId: rssSource.id, rssDocument: result, readStatus: RssReadStatus.SUCCESS}))
             })
             .catch(error => {
-                dispatch(setRssLoadingError(error.message));
-                dispatch(setRssDocument());
+                dispatch(setRssLoadingError(rssSource.id, error.message));
+                //dispatch(setRssDocument());
             })
     }
 }
@@ -111,18 +116,3 @@ export function removeRssDocumentFromCache(rssSourceId: RssSourceId):RssActionTy
     }
 }
 
-/* export function refreshRssDocument(rssSourceId: RssSourceId): ThunkAction<void, {}, {}, AnyAction> {
-    return (dispatch: ThunkDispatch<{}, {}, AnyAction>): void => {
-        dispatch(setRssLoadingPending());
-        fetchRssDocument(rssSource.url)
-            .then((result) => {
-                dispatch(setRssLoadingSuccess());
-                dispatch(setRssDocument(result));
-                dispatch(addRssDocumentToCache({rssSourceId: rssSource.id, rssDocument: result, readStatus: RssReadStatus.SUCCESS}))
-            })
-            .catch(error => {
-                dispatch(setRssLoadingError(error.message));
-                dispatch(setRssDocument());
-            })
-    }
-} */
