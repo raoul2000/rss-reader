@@ -87,7 +87,12 @@ export function loadRssDocument(rssSource: RssSource): ThunkAction<void, {}, {},
             .then((result) => {
                 dispatch(setRssLoadingSuccess(rssSource.id));
                 //dispatch(setRssDocument(result));
-                dispatch(addRssDocumentToCache({rssSourceId: rssSource.id, rssDocument: result, readStatus: RssReadStatus.SUCCESS}))
+                dispatch(addRssDocumentToCache({
+                    rssSourceId: rssSource.id, 
+                    rssDocument: result, 
+                    readStatus: RssReadStatus.SUCCESS,
+                    loadErrorMessage: null
+                }))
             })
             .catch(error => {
                 dispatch(setRssLoadingError(rssSource.id, error.message));

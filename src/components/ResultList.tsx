@@ -35,8 +35,9 @@ const ResultList: React.FC<Props> = (props: Props) => {
      * Trigger the loadRss Action
      */
     const handleLoadRssDocument = () => {
+        //debugger;
         if (selectedSource) {
-            if (!rssDocumentCacheItem) {
+            if (!rssDocumentCacheItem || !rssDocumentCacheItem.rssDocument) {
                 loadRss(selectedSource);
             } 
 /*             else {
@@ -55,12 +56,13 @@ const ResultList: React.FC<Props> = (props: Props) => {
             <div className="resultListItems">
                 {rssLoadingStatus === RssReadStatus.PENDING && <div>loading ...</div>}
                 {rssLoadingStatus === RssReadStatus.ERROR && <div>{rssLoadErrorMessage}</div>}
-                {rssDocument && rssDocument.rssDocument.items?.map(item => (
+                {rssDocument && rssDocument.rssDocument && rssDocument.rssDocument.items?.map(item => (
                     <ResultListItem key={item.id} rssItem={item} isSelected={selectedItemId === item.id} />
                 ))}
             </div>
         </div>
     )
 }
+
 
 export default connector(ResultList)

@@ -175,3 +175,12 @@ export const getSelectedRssDocument = (state: RssSourceState): RssDocumentCacheI
     const { rssDocumentCache, selectedRssSourceId } = state;
     return rssDocumentCache.find(item => item.rssSourceId === selectedRssSourceId) || null;
 }
+// TODO: continue from here below ...
+/* 
+export const getRssDocumentsReadStatus = (state: RssSourceState): Array<RssReadStatus | null> => {
+    const { rssDocumentCache } = state;
+    return rssDocumentCache.map(item => ({
+        rssSourceId: item.rssSourceId,
+        item.readStatus
+    }));
+} */

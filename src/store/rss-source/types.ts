@@ -66,9 +66,9 @@ export interface RssDocument {
     items: Item[];
 }
 export interface RssDocumentCacheItem {
-    rssSourceId:RssSourceId,
+    rssSourceId: RssSourceId,
     rssDocument: RssDocument | null,
-    readStatus:RssReadStatus | null,
+    readStatus: RssReadStatus | null,
     loadErrorMessage: string | null
 }
 export interface RssSourceState {
@@ -165,11 +165,7 @@ interface SelectRssItemAction extends Action {
 
 interface AddRssDocumentToCacheAction extends Action {
     type: typeof ADD_RSS_DOCUMENT_TO_CACHE,
-    payload: {
-        rssSourceId: RssSourceId,
-        rssDocument: RssDocument,
-        readStatus: RssReadStatus
-    }
+    payload: RssDocumentCacheItem
 }
 
 interface RemoveRssDocumentFromCacheAction extends Action {
