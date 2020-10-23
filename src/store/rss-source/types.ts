@@ -49,6 +49,13 @@ export enum RssReadStatus {
     ERROR = "ERROR"
 }
 /**
+ * Represent the read status of an RSS Source
+ */
+export interface RssSourceReadStatus {
+    sourceId: RssSourceId,
+    status: RssReadStatus | null
+}
+/**
  * Represent an entry in the RSS Document article list 
  */
 export interface Item {

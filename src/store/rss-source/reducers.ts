@@ -1,5 +1,5 @@
 import {
-    RssSourceState, RssActionTypes, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, SET_RSS_DOCUMENT,
+    RssSourceState,RssSourceReadStatus, RssActionTypes, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, SET_RSS_DOCUMENT,
     LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM, RssReadStatus, RssSourceId, ADD_RSS_DOCUMENT_TO_CACHE, REMOVE_RSS_DOCUMENT_FROM_CACHE, RssDocumentCacheItem
 } from './types'
 
@@ -175,12 +175,14 @@ export const getSelectedRssDocument = (state: RssSourceState): RssDocumentCacheI
     const { rssDocumentCache, selectedRssSourceId } = state;
     return rssDocumentCache.find(item => item.rssSourceId === selectedRssSourceId) || null;
 }
-// TODO: continue from here below ...
-/* 
-export const getRssDocumentsReadStatus = (state: RssSourceState): Array<RssReadStatus | null> => {
+
+export const getRssDocumentsReadStatus = (state: RssSourceState): Array<RssSourceReadStatus> => {
     const { rssDocumentCache } = state;
-    return rssDocumentCache.map(item => ({
-        rssSourceId: item.rssSourceId,
-        item.readStatus
-    }));
-} */
+    if(rssDocumentCache) {
+        return rssDocumentCache.map(item => ({
+            sourceId: item.rssSourceId,
+            status: item.readStatus
+        }));
+    }
+    return [];
+}

@@ -35,15 +35,11 @@ const ResultList: React.FC<Props> = (props: Props) => {
      * Trigger the loadRss Action
      */
     const handleLoadRssDocument = () => {
-        //debugger;
         if (selectedSource) {
             if (!rssDocumentCacheItem || !rssDocumentCacheItem.rssDocument) {
                 loadRss(selectedSource);
-            } 
-/*             else {
-                setRssDocument(rssDocumentCacheItem.rssDocument)
             }
- */        }
+        }
     };
     // load RSS Document each time the selected RSS source Id changes
     useEffect(handleLoadRssDocument, [selectedSourceId])

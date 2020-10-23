@@ -14,10 +14,10 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & {
     source: RssSource,
     isSelected: boolean,
-    refresh: RssReadStatus | boolean | undefined
+    readStatus: RssReadStatus | null
 }
 
-const SourceListItem: React.FC<Props> = ({ source, selectRssSource, loadRssDocument, isSelected, refresh}: Props) => {
+const SourceListItem: React.FC<Props> = ({ source, selectRssSource, loadRssDocument, isSelected, readStatus}: Props) => {
 
     const doSelectRssSource = () => {
         selectRssSource(source.id);
@@ -28,8 +28,8 @@ const SourceListItem: React.FC<Props> = ({ source, selectRssSource, loadRssDocum
     });
     const refreshClassName: string = classNames({
         refresh: true,
-        'refresh-pending': refresh === RssReadStatus.PENDING,
-        'refresh-error': refresh === RssReadStatus.ERROR
+        'refresh-pending': readStatus === RssReadStatus.PENDING,
+        'refresh-error': readStatus === RssReadStatus.ERROR
     });
     const doLoadRssDocument = (e:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
