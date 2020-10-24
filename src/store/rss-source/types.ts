@@ -11,6 +11,9 @@ export const LOAD_RSS_DOCUMENT = "@rssSource/LOAD_RSS_DOCUMENT";
 export const SET_RSS_DOCUMENT = "@rssSource/SET_RSS_DOCUMENT";
 export const SELECT_RSS_ITEM = "@rssSource/SELECT_RSS_ITEM";
 
+export const ADD_RSS_DOCUMENT_TO_CACHE = "@rssSource/ADD_RSS_DOCUMENT_TO_CACHE";
+export const REMOVE_RSS_DOCUMENT_FROM_CACHE = "@rssSource/REMOVE_RSS_DOCUMENT_FROM_CACHE";
+
 export type RssSourceId = string;
 export type RssItemId = string;
 
@@ -46,6 +49,13 @@ export enum RssReadStatus {
     ERROR = "ERROR"
 }
 /**
+ * Represent the read status of an RSS Source
+ */
+export interface RssSourceReadStatus {
+    sourceId: RssSourceId,
+    status: RssReadStatus | null
+}
+/**
  * Represent an entry in the RSS Document article list 
  */
 export interface Item {
@@ -62,7 +72,13 @@ export interface RssDocument {
     title?: string;
     items: Item[];
 }
-
+export interface RssDocumentCacheItem {
+    rssSourceId: RssSourceId,
+    rssDocument: RssDocument | null,
+    readStatus: RssReadStatus | null,
+    loadErrorMessage: string | null,
+    selected: boolean
+}
 export interface RssSourceState {
     /**
      * The list of RSS sources currently loaded in the app. 
@@ -74,7 +90,7 @@ export interface RssSourceState {
      * This property is `undefined` when no RSS source is selected, otherwise it 
      * contains the ID of the selected RSS Source
      */
-    selectedRssSourceId: RssSourceId | undefined
+    //selectedRssSourceId: RssSourceId | undefined
     /**
      * Describes the status of the latest RSS read operation
      * performed on the source with ID equal to `selectedRssSourceId`. 
@@ -93,7 +109,12 @@ export interface RssSourceState {
      * Id of the RSS item currently selected or `undefined` if no RSS item is selected
      */
     selectedRssItemId: RssItemId | undefined
+    /**
+     * Stores RSS Documents already loaded
+     */
+    rssDocumentCache: RssDocumentCacheItem[]
 }
+
 interface SelectRssSourceAction extends Action {
     type: typeof SELECT_RSS_SOURCE,
     payload: {
@@ -120,15 +141,20 @@ interface SetRssDocumentAction extends Action {
 }
 interface setRssLoadingPendingAction extends Action {
     type: typeof LOAD_RSS_PENDING,
-    payload: {}
+    payload: {
+        rssSourceId: RssSourceId
+    }
 }
 interface setRssLoadingSuccessAction extends Action {
     type: typeof LOAD_RSS_SUCCESS,
-    payload: {}
+    payload: {
+        rssSourceId: RssSourceId
+    }
 }
 interface setRssLoadingErrorAction extends Action {
     type: typeof LOAD_RSS_ERROR,
     payload: {
+        rssSourceId: RssSourceId,
         message: string
     }
 }
@@ -144,5 +170,17 @@ interface SelectRssItemAction extends Action {
         id?: RssItemId
     }
 }
+
+interface AddRssDocumentToCacheAction extends Action {
+    type: typeof ADD_RSS_DOCUMENT_TO_CACHE,
+    payload: RssDocumentCacheItem
+}
+
+interface RemoveRssDocumentFromCacheAction extends Action {
+    type: typeof REMOVE_RSS_DOCUMENT_FROM_CACHE,
+    payload: {
+        rssSourceId: RssSourceId
+    }
+}
 export type RssActionTypes = SelectRssSourceAction | AddRssSourceAction | DeleteRssSourceAction | SetRssDocumentAction | LoadRssSocumentAction
-    | setRssLoadingPendingAction | setRssLoadingSuccessAction | setRssLoadingErrorAction | SelectRssItemAction;
+    | setRssLoadingPendingAction | setRssLoadingSuccessAction | setRssLoadingErrorAction | SelectRssItemAction | AddRssDocumentToCacheAction | RemoveRssDocumentFromCacheAction;

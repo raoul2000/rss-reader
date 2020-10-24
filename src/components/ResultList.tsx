@@ -1,40 +1,48 @@
 import React, { useEffect } from 'react';
-import { connect, ConnectedProps } from 'react-redux'
+import { connect, ConnectedProps, useSelector } from 'react-redux'
 import { RootState } from '../store'
-import { loadRssDocument } from '../store/rss-source/actions'
-import { getSelectedRssSource } from '../store/rss-source/reducers'
-import { RssSource, RssReadStatus } from '../store/rss-source/types'
+import { loadRssDocument, setRssDocument } from '../store/rss-source/actions'
+import { getSelectedRssSource, getRssDocumentFromCache, getSelectedRssDocument } from '../store/rss-source/reducers'
+import { RssSource, RssReadStatus, RssDocumentCacheItem } from '../store/rss-source/types'
 import ResultListItem from './ResultListItem'
 
 const mapState = (state: RootState) => ({
-    selectedSourceId: state.rssSource.selectedRssSourceId,
     selectedSource: getSelectedRssSource(state.rssSource),
-    rssDocument: state.rssSource.rssDocument,
+    rssDocument: getSelectedRssDocument(state.rssSource),
     rssLoadingStatus: state.rssSource.readStatus,
     rssLoadErrorMessage: state.rssSource.readErrorMessage,
     selectedItemId: state.rssSource.selectedRssItemId
 })
 const mapDispatch = {
-    loadRss: (rssSource: RssSource) => loadRssDocument(rssSource)
+    loadRss: (rssSource: RssSource) => loadRssDocument(rssSource),
+    setRssDocument
 }
 const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux
 
 const ResultList: React.FC<Props> = (props: Props) => {
-    const { selectedSourceId, selectedSource, rssDocument, rssLoadingStatus, rssLoadErrorMessage, loadRss, selectedItemId } = props;
+    const { selectedSource, rssDocument, rssLoadingStatus, rssLoadErrorMessage, loadRss, setRssDocument, selectedItemId } = props;
 
+    const rssDocumentCacheItem: RssDocumentCacheItem | null = useSelector<RootState, RssDocumentCacheItem | null>((state: RootState) => {
+        if (selectedSource) {
+            return getRssDocumentFromCache(state.rssSource, selectedSource.id)
+        }
+        return null;
+    })
     /**
-     * Trigger the loadRss Action
+     * Trigger the loadRss Action   
      */
     const handleLoadRssDocument = () => {
         if (selectedSource) {
-            loadRss(selectedSource);
+            if (!rssDocumentCacheItem || !rssDocumentCacheItem.rssDocument) {
+                loadRss(selectedSource);
+            }
         }
     };
     // load RSS Document each time the selected RSS source Id changes
-    useEffect(handleLoadRssDocument, [selectedSourceId])
-
+    useEffect(handleLoadRssDocument, [selectedSource?.id])
+    console.log(rssDocument);
     return (
         <div id="resultList">
             <h3>
@@ -43,12 +51,13 @@ const ResultList: React.FC<Props> = (props: Props) => {
             <div className="resultListItems">
                 {rssLoadingStatus === RssReadStatus.PENDING && <div>loading ...</div>}
                 {rssLoadingStatus === RssReadStatus.ERROR && <div>{rssLoadErrorMessage}</div>}
-                {rssDocument && rssDocument.items?.map(item => (
+                {rssDocument && rssDocument.rssDocument && rssDocument.rssDocument.items?.map(item => (
                     <ResultListItem key={item.id} rssItem={item} isSelected={selectedItemId === item.id} />
                 ))}
             </div>
         </div>
     )
 }
+
 
 export default connector(ResultList)
