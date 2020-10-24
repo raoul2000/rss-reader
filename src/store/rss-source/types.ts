@@ -76,7 +76,8 @@ export interface RssDocumentCacheItem {
     rssSourceId: RssSourceId,
     rssDocument: RssDocument | null,
     readStatus: RssReadStatus | null,
-    loadErrorMessage: string | null
+    loadErrorMessage: string | null,
+    selected: boolean
 }
 export interface RssSourceState {
     /**
@@ -89,7 +90,7 @@ export interface RssSourceState {
      * This property is `undefined` when no RSS source is selected, otherwise it 
      * contains the ID of the selected RSS Source
      */
-    selectedRssSourceId: RssSourceId | undefined
+    //selectedRssSourceId: RssSourceId | undefined
     /**
      * Describes the status of the latest RSS read operation
      * performed on the source with ID equal to `selectedRssSourceId`. 

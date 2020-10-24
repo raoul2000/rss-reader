@@ -91,7 +91,8 @@ export function loadRssDocument(rssSource: RssSource): ThunkAction<void, {}, {},
                     rssSourceId: rssSource.id, 
                     rssDocument: result, 
                     readStatus: RssReadStatus.SUCCESS,
-                    loadErrorMessage: null
+                    loadErrorMessage: null,
+                    selected: false
                 }))
             })
             .catch(error => {

@@ -7,7 +7,6 @@ import { RssSource, RssReadStatus, RssDocumentCacheItem } from '../store/rss-sou
 import ResultListItem from './ResultListItem'
 
 const mapState = (state: RootState) => ({
-    selectedSourceId: state.rssSource.selectedRssSourceId,
     selectedSource: getSelectedRssSource(state.rssSource),
     rssDocument: getSelectedRssDocument(state.rssSource),
     rssLoadingStatus: state.rssSource.readStatus,
@@ -23,7 +22,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux
 
 const ResultList: React.FC<Props> = (props: Props) => {
-    const { selectedSourceId, selectedSource, rssDocument, rssLoadingStatus, rssLoadErrorMessage, loadRss, setRssDocument, selectedItemId } = props;
+    const { selectedSource, rssDocument, rssLoadingStatus, rssLoadErrorMessage, loadRss, setRssDocument, selectedItemId } = props;
 
     const rssDocumentCacheItem: RssDocumentCacheItem | null = useSelector<RootState, RssDocumentCacheItem | null>((state: RootState) => {
         if (selectedSource) {
@@ -32,7 +31,7 @@ const ResultList: React.FC<Props> = (props: Props) => {
         return null;
     })
     /**
-     * Trigger the loadRss Action
+     * Trigger the loadRss Action   
      */
     const handleLoadRssDocument = () => {
         if (selectedSource) {
@@ -42,7 +41,7 @@ const ResultList: React.FC<Props> = (props: Props) => {
         }
     };
     // load RSS Document each time the selected RSS source Id changes
-    useEffect(handleLoadRssDocument, [selectedSourceId])
+    useEffect(handleLoadRssDocument, [selectedSource?.id])
     console.log(rssDocument);
     return (
         <div id="resultList">
