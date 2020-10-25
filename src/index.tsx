@@ -43,7 +43,14 @@ import { addRssSource } from './store/rss-source/actions';
     url: 'http://localhost:3000/test-response/rss-en-continu.xml'
   }
   
-].map(source => store.dispatch(addRssSource(source)));
+].map(source => store.dispatch(addRssSource({
+  ...source,
+  selected: false,
+  document: null,
+  loadErrorMessage: null,
+  readStatus: null,
+  selectedItemId: null
+})));
 
 
 ReactDOM.render(

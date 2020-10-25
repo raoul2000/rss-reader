@@ -1,19 +1,18 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from '../store'
-import { getRssItemById } from '../store/rss-source/reducers'
+import { getSelectedRssItem } from '../store/rss-source/reducers'
 
 
 const mapState = (state: RootState) => ({
-    rssItem: getRssItemById(state.rssSource)
+    rssItem: getSelectedRssItem(state)
 })
 
 const connector = connect(mapState);
 type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux
 
-export const ResultDetail: React.FC<Props> = ({ rssItem }: Props) => {
-
+export const ResultDetail: React.FC<Props> = ({rssItem}:Props) => {
     return (
         <div id="resultDetail">
             {rssItem &&

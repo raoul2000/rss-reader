@@ -1,14 +1,15 @@
 import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 import { AnyAction } from 'redux';
 import {
-    RssActionTypes, RssSourceId, RssSource, RssItemId, RssDocument, RssReadStatus, RssDocumentCacheItem, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, SET_RSS_DOCUMENT,
-    LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM, ADD_RSS_DOCUMENT_TO_CACHE, REMOVE_RSS_DOCUMENT_FROM_CACHE
+    RssActionTypes, RssSourceId, RssSource, RssItemId, RssDocument, SET_RSS_DOCUMENT, TOGGLE_SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, 
+    LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM 
 } from './types'
-import {fetchRssDocument} from '../../lib/rss-loader';
+import {fetchRssDocument, normalizeRssDocument} from '../../lib/rss-loader';
 
-export function selectRssSource(id: RssSourceId): RssActionTypes {
+
+export function toggleSelectRssSource(id: RssSourceId): RssActionTypes {
     return {
-        type: SELECT_RSS_SOURCE,
+        type: TOGGLE_SELECT_RSS_SOURCE,
         payload: {
             id
         }
@@ -30,10 +31,11 @@ export function deleteRssSource(id: RssSourceId): RssActionTypes {
         }
     }
 }
-export function setRssDocument(rssDocument?: RssDocument): RssActionTypes {
+export function setRssDocument(rssSourceId: RssSourceId, rssDocument: RssDocument): RssActionTypes {
     return {
         type: SET_RSS_DOCUMENT,
         payload: {
+            rssSourceId,
             rssDocument
         }
     }
@@ -46,11 +48,12 @@ export function setRssLoadingPending(rssSourceId: RssSourceId): RssActionTypes {
         }
     }
 }
-export function setRssLoadingSuccess(rssSourceId: RssSourceId): RssActionTypes {
+export function setRssLoadingSuccess(rssSourceId: RssSourceId, document: RssDocument): RssActionTypes {
     return {
         type: LOAD_RSS_SUCCESS,
         payload: {
-            rssSourceId
+            rssSourceId,
+            document
         }
     }
 }
@@ -63,11 +66,11 @@ export function setRssLoadingError(rssSourceId: RssSourceId, message: string): R
         }
     }
 }
-export function selectRssItem(id?: RssItemId): RssActionTypes {
+export function selectRssItem(itemId: RssItemId): RssActionTypes {
     return {
         type: SELECT_RSS_ITEM,
         payload: {
-            id
+            itemId
         }
     }
 }
@@ -84,41 +87,13 @@ export function loadRssDocument(rssSource: RssSource): ThunkAction<void, {}, {},
     return (dispatch: ThunkDispatch<{}, {}, AnyAction>): void => {
         dispatch(setRssLoadingPending(rssSource.id));
         fetchRssDocument(rssSource.url)
+            .then(normalizeRssDocument(rssSource.id))
             .then((result) => {
-                dispatch(setRssLoadingSuccess(rssSource.id));
-                //dispatch(setRssDocument(result));
-                dispatch(addRssDocumentToCache({
-                    rssSourceId: rssSource.id, 
-                    rssDocument: result, 
-                    readStatus: RssReadStatus.SUCCESS,
-                    loadErrorMessage: null,
-                    selected: false
-                }))
+                dispatch(setRssLoadingSuccess(rssSource.id, result));
             })
             .catch(error => {
                 dispatch(setRssLoadingError(rssSource.id, error.message));
-                //dispatch(setRssDocument());
             })
-    }
-}
-/**
- * Add a RSS Document Item to cache. If an item with the same `rssSourceId` is present in the
- * cache, then it is updated
- * @param item the Rss Document cache item to add
- */
-export function addRssDocumentToCache(item:RssDocumentCacheItem):RssActionTypes {
-    return {
-        type: ADD_RSS_DOCUMENT_TO_CACHE,
-        payload: item
-    }
-}
-
-export function removeRssDocumentFromCache(rssSourceId: RssSourceId):RssActionTypes {
-    return {
-        type: REMOVE_RSS_DOCUMENT_FROM_CACHE,
-        payload: {
-            rssSourceId
-        }
     }
 }
 

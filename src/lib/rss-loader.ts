@@ -1,30 +1,37 @@
 import Parser from 'rss-parser';
-import { RssDocument, Item } from '../store/rss-source/types'
+import { RssDocument, Item, RssSourceId } from '../store/rss-source/types'
+import md5 from 'blueimp-md5';
 
-const normalizeRssIem = (item: Parser.Item): Item => ({
-    id: item.guid || item.id,
+const normalizeRssItem = (item: Parser.Item, sourceId: RssSourceId): Item => ({
+    id: md5(sourceId + (item.guid || item.id)),
     title: item.title,
     content: item.content,
     link: item.link,
-    pubDate: item.pubDate
+    pubDate: item.pubDate,
+    selected: false
 })
 
-const normalizeRssItems = (items?: Parser.Item[]): Item[] => {
+const normalizeRssItems = (sourceId: RssSourceId, items?: Parser.Item[]): Item[] => {
     if (!items || !Array.isArray(items)) {
         return [];
     }
     return items
-        .map(normalizeRssIem)
+        .map(item => normalizeRssItem(item, sourceId))
         .filter(item => item)
 }
 
-export const normalizeRssDocument = (doc: Parser.Output): RssDocument => ({
-    title: doc.title,
-    items: normalizeRssItems(doc.items)
-})
+export const normalizeRssDocument = (sourceId: RssSourceId) => (doc: Parser.Output): RssDocument => {
 
-export const fetchRssDocument = (url: string): Promise<RssDocument> => {
+    const normalizedItems = normalizeRssItems(sourceId, doc.items);
+
+    return {
+        title: doc.title,
+        items: normalizedItems, // TODO: remove this
+        itemIds:normalizedItems.map(item => item.id)
+    }
+}
+
+export const fetchRssDocument = (url: string): Promise<Parser.Output> => {
     const rssParser = new Parser();
     return rssParser.parseURL(url)
-        .then(normalizeRssDocument)
 }

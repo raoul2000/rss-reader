@@ -2,10 +2,36 @@ import React, { useEffect } from 'react';
 import { connect, ConnectedProps, useSelector } from 'react-redux'
 import { RootState } from '../store'
 import { loadRssDocument, setRssDocument } from '../store/rss-source/actions'
-import { getSelectedRssSource, getRssDocumentFromCache, getSelectedRssDocument } from '../store/rss-source/reducers'
-import { RssSource, RssReadStatus, RssDocumentCacheItem } from '../store/rss-source/types'
+import { getSelectedRssDocuments } from '../store/rss-source/reducers'
+//import { RssSource, RssReadStatus, RssDocumentCacheItem } from '../store/rss-source/types'
 import ResultListItem from './ResultListItem'
 
+const mapState = (state: RootState) => ({
+    documents: getSelectedRssDocuments(state)
+})
+
+const connector = connect(mapState);
+type PropsFromRedux = ConnectedProps<typeof connector>
+type Props = PropsFromRedux
+
+const ResultList: React.FC<Props> = ({documents}) => {
+    return (
+        <div id="resultList">
+            <div className="resultListItems">
+                {
+                    documents && documents.map(doc => doc && doc?.items.map( item => (
+                        <ResultListItem 
+                            key={item.id}
+                            itemId={item.id}
+                        />
+                    )))
+                }
+            </div>
+        </div>
+    )
+}
+export default connector(ResultList)
+/* 
 const mapState = (state: RootState) => ({
     selectedSource: getSelectedRssSource(state.rssSource),
     rssDocument: getSelectedRssDocument(state.rssSource),
@@ -30,9 +56,7 @@ const ResultList: React.FC<Props> = (props: Props) => {
         }
         return null;
     })
-    /**
-     * Trigger the loadRss Action   
-     */
+
     const handleLoadRssDocument = () => {
         if (selectedSource) {
             if (!rssDocumentCacheItem || !rssDocumentCacheItem.rssDocument) {
@@ -58,6 +82,7 @@ const ResultList: React.FC<Props> = (props: Props) => {
         </div>
     )
 }
+ */
 
-
-export default connector(ResultList)
+//export default connector(ResultList)
+//export default ResultList
