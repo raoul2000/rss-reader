@@ -1,17 +1,16 @@
 import { ThunkAction, ThunkDispatch } from 'redux-thunk'
-import { AnyAction } from 'redux';
 import {
-    RssActionTypes, RssSourceId, RssSource, RssItemId, RssDocument, SET_RSS_DOCUMENT, TOGGLE_SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, 
-    LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM 
+    RssActionTypes, RssSourceId, RssSource, RssItemId, RssDocument, SET_RSS_DOCUMENT, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE,
+    LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM
 } from './types'
-import {fetchRssDocument, normalizeRssDocument} from '../../lib/rss-loader';
+import { fetchRssDocument, normalizeRssDocument } from '../../lib/rss-loader';
 
 
-export function toggleSelectRssSource(id: RssSourceId): RssActionTypes {
+export function selectRssSource(rssSourceId: RssSourceId): RssActionTypes {
     return {
-        type: TOGGLE_SELECT_RSS_SOURCE,
+        type: SELECT_RSS_SOURCE,
         payload: {
-            id
+            rssSourceId
         }
     }
 }
@@ -23,11 +22,11 @@ export function addRssSource(source: RssSource): RssActionTypes {
         }
     }
 }
-export function deleteRssSource(id: RssSourceId): RssActionTypes {
+export function deleteRssSource(rssSourceId: RssSourceId): RssActionTypes {
     return {
         type: DELETE_RSS_SOURCE,
         payload: {
-            id
+            rssSourceId
         }
     }
 }
@@ -83,8 +82,8 @@ export function selectRssItem(itemId: RssItemId): RssActionTypes {
  * 
  * @param rssSource the RSS source to load
  */
-export function loadRssDocument(rssSource: RssSource): ThunkAction<void, {}, {}, AnyAction> {
-    return (dispatch: ThunkDispatch<{}, {}, AnyAction>): void => {
+export function loadRssDocument(rssSource: RssSource): ThunkAction<void, {}, {}, RssActionTypes> {
+    return (dispatch: ThunkDispatch<{}, {}, RssActionTypes>): void => {
         dispatch(setRssLoadingPending(rssSource.id));
         fetchRssDocument(rssSource.url)
             .then(normalizeRssDocument(rssSource.id))

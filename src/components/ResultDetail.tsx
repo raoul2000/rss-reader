@@ -28,4 +28,5 @@ export const ResultDetail: React.FC<Props> = ({rssItem}:Props) => {
     )
 }
 
+
 export default connector(ResultDetail)

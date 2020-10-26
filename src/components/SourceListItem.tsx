@@ -1,29 +1,35 @@
 import React from 'react';
 import { connect, ConnectedProps, useSelector } from 'react-redux'
-import { toggleSelectRssSource, loadRssDocument } from '../store/rss-source/actions'
-import { RssSource, RssReadStatus, RssSourceId } from '../store/rss-source/types'
+import { selectRssSource, loadRssDocument } from '../store/rss-source/actions'
 import { getRssSourceById, isRssSourceLoaded } from '../store/rss-source/reducers'
+import { RssSourceId, RssReadStatus } from '../store/rss-source/types'
 import classNames from 'classnames';
+import { RootState } from '../store'
+
+const mapState = (state: RootState) => ({
+    selectedSourceId: state.rssSource.selectedSourceId
+})
 
 const mapDispatch = {
-    toggleSelectRssSource,
+    selectRssSource,
     loadRssDocument
 }
 
-const connector = connect(null, mapDispatch);
+const connector = connect(mapState, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & {
     sourceId: RssSourceId
 }
 
-const SourceListItem: React.FC<Props> = ({ sourceId, toggleSelectRssSource, loadRssDocument}: Props) => {
+const SourceListItem: React.FC<Props> = ({ sourceId,selectedSourceId, selectRssSource, loadRssDocument }: Props) => {
 
     const rssSource = useSelector(getRssSourceById(sourceId));
     const rssSourceLoaded = useSelector(isRssSourceLoaded(sourceId));
+    
 
     const doSelectRssSource = () => {
         console.log(`select source id ${sourceId}`)
-        toggleSelectRssSource(sourceId);
+        selectRssSource(sourceId);
         if (rssSource && !rssSourceLoaded) {
             loadRssDocument(rssSource);
         }
@@ -31,14 +37,14 @@ const SourceListItem: React.FC<Props> = ({ sourceId, toggleSelectRssSource, load
 
     const itemClassName: string = classNames({
         'source-item': true,
-        'selected': rssSource && rssSource.selected
+        'selected': rssSource && rssSource?.id === selectedSourceId
     });
     const refreshClassName: string = classNames({
         refresh: true,
         'refresh-pending': rssSource && rssSource.readStatus === RssReadStatus.PENDING,
         'refresh-error': rssSource && rssSource.readStatus === RssReadStatus.ERROR
     });
-    const doLoadRssDocument = (e:React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const doLoadRssDocument = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
 
         // for now refresh and selection are equivalent : they both triggers the
@@ -59,11 +65,11 @@ const SourceListItem: React.FC<Props> = ({ sourceId, toggleSelectRssSource, load
                 {rssSource && rssSource.label}
             </div>
             <div>
-                <div 
+                <div
                     title="refresh"
-                    className={refreshClassName} 
+                    className={refreshClassName}
                     onClick={doLoadRssDocument}
-                >    
+                >
                 </div>
             </div>
         </div>

@@ -1,30 +1,32 @@
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps, useSelector } from 'react-redux'
 import { RootState } from '../store'
-import { loadRssDocument, setRssDocument } from '../store/rss-source/actions'
-import { getSelectedRssDocuments } from '../store/rss-source/reducers'
-//import { RssSource, RssReadStatus, RssDocumentCacheItem } from '../store/rss-source/types'
+import { getRssItemsForSelectedSource } from '../store/rss-source/reducers'
 import ResultListItem from './ResultListItem'
 
 const mapState = (state: RootState) => ({
-    documents: getSelectedRssDocuments(state)
+    rssItems: getRssItemsForSelectedSource(state),
+    selectedItemId: state.rssSource.selectedItemId
 })
+
 
 const connector = connect(mapState);
 type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux
 
-const ResultList: React.FC<Props> = ({documents}) => {
+const ResultList: React.FC<Props> = ({rssItems, selectedItemId}:Props) => {
     return (
         <div id="resultList">
+            <div>{rssItems.length} items</div>
             <div className="resultListItems">
                 {
-                    documents && documents.map(doc => doc && doc?.items.map( item => (
+                    rssItems.map( item => (
                         <ResultListItem 
                             key={item.id}
                             itemId={item.id}
+                            isSelected={selectedItemId === item.id}
                         />
-                    )))
+                    ))
                 }
             </div>
         </div>

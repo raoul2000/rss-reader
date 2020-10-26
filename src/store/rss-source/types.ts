@@ -1,7 +1,7 @@
 import { Action } from 'redux';
 
 export const ADD_RSS_SOURCE = "@rssSource/ADD_RSS_SOURCE";
-export const TOGGLE_SELECT_RSS_SOURCE = "@rssSource/TOGGLE_SELECT_RSS_SOURCE";
+export const SELECT_RSS_SOURCE = "@rssSource/SELECT_RSS_SOURCE";
 export const DELETE_RSS_SOURCE = "@rssSource/DELETE_RSS_SOURCE";
 
 export const LOAD_RSS_PENDING = "@rssSource/LOAD_RSS_PENDING";
@@ -22,6 +22,7 @@ export type RssItemEntry = { [key:string]: Item};
  */
 // TODO: introduce IDLE status
 export enum RssReadStatus {
+    IDLE = "IDLE",
     /**
      * The RSS source is about to be read
      */
@@ -39,11 +40,14 @@ export enum RssReadStatus {
  * Represent the parsed verison of an RSS source
  */
 export interface RssDocument {
-    title?: string;
-    items: Item[];
-    itemIds: RssItemId[]
+    title?: string
+    items: Item[]
 }
+export interface RssDocumentInfo {
+    title?: string
+    itemIds: RssItemId[]
 
+}
 export interface RssSource {
     /**
      * ID of the RSS source
@@ -60,7 +64,7 @@ export interface RssSource {
     /**
      * Selctions state: when TRUE, this source is selected
      */
-    selected: boolean
+    //selected: boolean
     /**
      * Describes the status of the latest RSS read operation. Set to
      * NULL when no read operation as occured 
@@ -75,10 +79,7 @@ export interface RssSource {
     /**
      * Content of this RSS source 
      */
-    document: RssDocument | null
-
-    selectedItemId: RssItemId | null
-
+    documentInfo: RssDocumentInfo | null
 }
 
 /**
@@ -90,7 +91,7 @@ export interface Item {
     content?: string;
     link?: string;
     pubDate?: string;
-    selected: boolean
+    //selected: boolean
 }
 
 export interface RssSourceState {
@@ -101,12 +102,14 @@ export interface RssSourceState {
     //allowMultiSourceSelection: boolean;
     
     rssItems: Array<Item>
+    selectedSourceId: RssSourceId | null
+    selectedItemId: RssItemId | null
 }
 
-interface ToggleSelectRssSourceAction extends Action {
-    type: typeof TOGGLE_SELECT_RSS_SOURCE,
+interface SelectRssSourceAction extends Action {
+    type: typeof SELECT_RSS_SOURCE,
     payload: {
-        id: RssSourceId
+        rssSourceId: RssSourceId
     }
 }
 interface AddRssSourceAction extends Action {
@@ -118,7 +121,7 @@ interface AddRssSourceAction extends Action {
 interface DeleteRssSourceAction extends Action {
     type: typeof DELETE_RSS_SOURCE,
     payload: {
-        id: RssSourceId
+        rssSourceId: RssSourceId
     }
 }
 interface setRssLoadingPendingAction extends Action {
@@ -148,7 +151,7 @@ interface setRssDocumentAction extends Action {
         rssDocument: RssDocument | null
     }
 }
-interface LoadRssSocumentAction extends Action {
+interface LoadRssDocumentAction extends Action {
     type: typeof LOAD_RSS_DOCUMENT,
     payload: {
         rssSourceId: RssSourceId,
@@ -162,5 +165,5 @@ interface SelectRssItemAction extends Action {
     }
 }
 
-export type RssActionTypes = ToggleSelectRssSourceAction | AddRssSourceAction | DeleteRssSourceAction | setRssDocumentAction | LoadRssSocumentAction
+export type RssActionTypes = SelectRssSourceAction | AddRssSourceAction | DeleteRssSourceAction | setRssDocumentAction | LoadRssDocumentAction
     | setRssLoadingPendingAction | setRssLoadingSuccessAction | setRssLoadingErrorAction | SelectRssItemAction;

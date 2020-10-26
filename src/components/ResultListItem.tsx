@@ -12,14 +12,15 @@ const mapDispatch = {
 const connector = connect(null, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & {
-    itemId: string
+    itemId: string,
+    isSelected: boolean
 }
 
-const ResultListItem: React.FC<Props> = ({ itemId, selectRssItem }: Props) => {
+const ResultListItem: React.FC<Props> = ({ itemId, isSelected, selectRssItem }: Props) => {
     const rssItem = useSelector(getRssItemById(itemId));
     const itemClassName = classNames({
         'rss-item': true,
-        'selected': rssItem && rssItem.selected
+        'selected': isSelected
     });
 
     return (

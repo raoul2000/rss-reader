@@ -7,8 +7,7 @@ const normalizeRssItem = (item: Parser.Item, sourceId: RssSourceId): Item => ({
     title: item.title,
     content: item.content,
     link: item.link,
-    pubDate: item.pubDate,
-    selected: false
+    pubDate: item.pubDate
 })
 
 const normalizeRssItems = (sourceId: RssSourceId, items?: Parser.Item[]): Item[] => {
@@ -27,7 +26,6 @@ export const normalizeRssDocument = (sourceId: RssSourceId) => (doc: Parser.Outp
     return {
         title: doc.title,
         items: normalizedItems, // TODO: remove this
-        itemIds:normalizedItems.map(item => item.id)
     }
 }
 

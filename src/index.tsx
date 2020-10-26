@@ -5,6 +5,7 @@ import App from './App';
 import { Provider } from 'react-redux';
 import { store } from './store'
 import { addRssSource } from './store/rss-source/actions';
+import { RssReadStatus } from './store/rss-source/types';
 
 [
   {
@@ -45,11 +46,9 @@ import { addRssSource } from './store/rss-source/actions';
   
 ].map(source => store.dispatch(addRssSource({
   ...source,
-  selected: false,
-  document: null,
+  documentInfo: null,
   loadErrorMessage: null,
-  readStatus: null,
-  selectedItemId: null
+  readStatus: RssReadStatus.IDLE
 })));
 
 
