@@ -1,7 +1,7 @@
 import { RootState } from '..'
 import {
     RssSourceState, RssActionTypes, Item, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, SET_RSS_DOCUMENT,
-    LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM, RssReadStatus, RssSourceId, RssItemId, RssDocumentInfo, RssSource
+    LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM, RssReadStatus, RssSourceId, RssItemId, RssSource
 } from './types'
 
 export const initialState: RssSourceState = {
@@ -17,10 +17,11 @@ export function rssSourceReducer(
 ): RssSourceState {
     switch (action.type) {
         case SELECT_RSS_SOURCE:
+
             return {
                 ...state,
                 selectedSourceId: action.payload.rssSourceId,
-                selectedItemId: null
+                selectedItemId: action.payload.rssSourceId === state.selectedSourceId ? state.selectedItemId : null
             }
         case ADD_RSS_SOURCE:
             return {
@@ -59,7 +60,10 @@ export function rssSourceReducer(
                     ? {
                         ...source,
                         readStatus: RssReadStatus.SUCCESS,
-                        document: action.payload.document
+                        documentInfo: {
+                            title: action.payload.document.title,
+                            itemIds: action.payload.document.items.map(item => item.id)
+                        }
                     } : { ...source }),
                 rssItems: [
                     ...state.rssItems,
@@ -79,14 +83,7 @@ export function rssSourceReducer(
         case SELECT_RSS_ITEM:
             return {
                 ...state,
-                rssItems: state.rssItems.map(item => item.id === action.payload.itemId
-                    ? {
-                        ...item,
-                        selected: true
-                    } : {
-                        ...item,
-                        selected: false
-                    })
+                selectedItemId: action.payload.itemId
             }
         default:
             return state;
@@ -94,48 +91,74 @@ export function rssSourceReducer(
 }
 
 // Selectors ////////////////////////////////////////////////////////////////////////////////////////////
-
-export const isRssSourceLoaded = (id: RssSourceId) => (state: RootState):boolean => {
+/**
+ * Returns TRUE if a given source is loaded given its Id, FALSE otherwise
+ * @param id the source Id
+ */
+export const isRssSourceLoaded = (id: RssSourceId) => (state: RootState): boolean => {
     const source = getRssSourceById(id)(state);
     return source?.documentInfo ? true : false;
 }
+/**
+ * Returns an `RssSource` object given its Id, or *undefined* if no such RSS source could be found
+ * @param id the source Id
+ */
 export const getRssSourceById = (id: RssSourceId) => (state: RootState): RssSource | undefined => {
     return state.rssSource.rssSources.find(source => source.id === id)
 }
+/**
+ * Returns an `Item` object given its Id, or *undefined* if no such RSS item could be found, for example
+ * if the parent RSS Source as not been loaded
+ * @param itemId the Rss Item Id
+ */
 export const getRssItemById = (itemId: RssItemId) => (state: RootState): Item | undefined => {
     return state.rssSource.rssItems.find(item => item.id === itemId);
 }
-export const getRssItemIdsBySourceId = (sourceId: RssSourceId) => (state:RootState): RssItemId[] => {
+/**
+ * Returns the list of RSS Item ids for a given RSS Source. If the source as not been loaded
+ * returns an empty array
+ * @param sourceId a list of Rss Item ids
+ */
+export const getRssItemIdsBySourceId = (sourceId: RssSourceId) => (state: RootState): RssItemId[] => {
     const rssSource = getRssSourceById(sourceId)(state);
-    if(rssSource) {
+    if (rssSource) {
         return rssSource.documentInfo?.itemIds || []
     }
     return [];
 }
+/**
+ * Returns a list of all `Item` object for a given source. If the source has not been successfully loaded
+ * this selector returns an empty array
+ * @param sourceId the RSS source Id
+ */
 export const getRssItemsBySourceId = (sourceId: RssSourceId) => (state: RootState): Item[] => {
     const rssItemIds = getRssItemIdsBySourceId(sourceId)(state);
-    const result:Item[] = [];
-    rssItemIds.forEach( rssItemId => {
+    const result: Item[] = [];
+    rssItemIds.forEach(rssItemId => {
         const item = getRssItemById(rssItemId)(state);
-        if(item) {
+        if (item) {
             result.push(item);
         }
     });
     return result;
 }
-export const getRssItemsForSelectedSource = (state:RootState): Item[] => {
-    if(state.rssSource.selectedSourceId) {
+/**
+ * Returns a list of RSS Items for the selected RSS source. An empty array is returned
+ * if no source is selected
+ * @param state the current state
+ */
+export const getRssItemsForSelectedSource = (state: RootState): Item[] => {
+    if (state.rssSource.selectedSourceId) {
         return getRssItemsBySourceId(state.rssSource.selectedSourceId)(state);
     }
     return [];
 }
-export const getSelectedRssSource = (state: RootState): RssSource | undefined => {
-    if(state.rssSource.selectedSourceId) {
-        return getRssSourceById(state.rssSource.selectedSourceId)(state);
-    }
-}
-export const getSelectedRssItem = (state:RootState): Item | undefined => {
-    if(state.rssSource.selectedItemId){
+/**
+ * Returns the selected RSS Item or *undefined* if no item is selected
+ * @param state the current state
+ */
+export const getSelectedRssItem = (state: RootState): Item | undefined => {
+    if (state.rssSource.selectedItemId) {
         return getRssItemById(state.rssSource.selectedItemId)(state);
     }
 }

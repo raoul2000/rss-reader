@@ -4,14 +4,15 @@ import { RootState } from '../store'
 import SourceListItem from './SourceListItem'
 
 const mapState = (state: RootState) => ({
-    rssSources: state.rssSource.rssSources
+    rssSources: state.rssSource.rssSources,
+    selectedSourceId: state.rssSource.selectedSourceId
 })
 
 const connector = connect(mapState);
 type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux
 
-const SourceList: React.FC<Props> = ({ rssSources }: Props) => {
+const SourceList: React.FC<Props> = ({ rssSources, selectedSourceId }: Props) => {
 
     return (
         <div id="sourceList">
@@ -19,6 +20,7 @@ const SourceList: React.FC<Props> = ({ rssSources }: Props) => {
                 <SourceListItem
                     key={source.id}
                     sourceId={source.id}
+                    isSelected={source.id === selectedSourceId}
                 />
             ))}
         </div>

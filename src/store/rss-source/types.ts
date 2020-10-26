@@ -20,7 +20,6 @@ export type RssItemEntry = { [key:string]: Item};
 /**
  * The status of the RSS read operation
  */
-// TODO: introduce IDLE status
 export enum RssReadStatus {
     IDLE = "IDLE",
     /**
@@ -37,17 +36,23 @@ export enum RssReadStatus {
     ERROR = "ERROR"
 }
 /**
- * Represent the parsed verison of an RSS source
+ * Represents the parsed verison of an RSS source
  */
 export interface RssDocument {
     title?: string
     items: Item[]
 }
+/**
+ * Describes the RSS document related to an RSS Source. Note that for normalization purposes,
+ * RSS Items are not store here only their Ids
+ */
 export interface RssDocumentInfo {
     title?: string
     itemIds: RssItemId[]
-
 }
+/**
+ * Represent an RSS Source instance
+ */
 export interface RssSource {
     /**
      * ID of the RSS source
@@ -61,10 +66,6 @@ export interface RssSource {
      * URL of the RSS feed for this source
      */
     url: string
-    /**
-     * Selctions state: when TRUE, this source is selected
-     */
-    //selected: boolean
     /**
      * Describes the status of the latest RSS read operation. Set to
      * NULL when no read operation as occured 
@@ -81,7 +82,6 @@ export interface RssSource {
      */
     documentInfo: RssDocumentInfo | null
 }
-
 /**
  * Represent an entry in the RSS Document article list 
  */
@@ -91,7 +91,6 @@ export interface Item {
     content?: string;
     link?: string;
     pubDate?: string;
-    //selected: boolean
 }
 
 export interface RssSourceState {
@@ -99,12 +98,22 @@ export interface RssSourceState {
      * The list of RSS sources currently loaded in the app. 
      */
     rssSources: Array<RssSource>;
-    //allowMultiSourceSelection: boolean;
-    
+    /**
+     * List of all RSS Items that were loaded. This list of Items is empty
+     * when the application starts, or no RSS source have been successfully loaded
+     */    
     rssItems: Array<Item>
+    /**
+     * The current RSS source being selected or NULL if none is selected
+     */
     selectedSourceId: RssSourceId | null
+    /**
+     * The current RSS Item being selected or NULL if none is selected
+     */
     selectedItemId: RssItemId | null
 }
+
+// Action types /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 interface SelectRssSourceAction extends Action {
     type: typeof SELECT_RSS_SOURCE,

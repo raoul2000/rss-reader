@@ -1,34 +1,31 @@
 import React from 'react';
-import { connect, ConnectedProps, useSelector } from 'react-redux'
+import { connect, ConnectedProps, useSelector, shallowEqual  } from 'react-redux'
 import { selectRssSource, loadRssDocument } from '../store/rss-source/actions'
 import { getRssSourceById, isRssSourceLoaded } from '../store/rss-source/reducers'
 import { RssSourceId, RssReadStatus } from '../store/rss-source/types'
 import classNames from 'classnames';
-import { RootState } from '../store'
-
-const mapState = (state: RootState) => ({
-    selectedSourceId: state.rssSource.selectedSourceId
-})
 
 const mapDispatch = {
     selectRssSource,
     loadRssDocument
 }
 
-const connector = connect(mapState, mapDispatch);
+const connector = connect(null, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & {
-    sourceId: RssSourceId
+    sourceId: RssSourceId,
+    isSelected: boolean
 }
 
-const SourceListItem: React.FC<Props> = ({ sourceId,selectedSourceId, selectRssSource, loadRssDocument }: Props) => {
+const SourceListItem: React.FC<Props> = ({ sourceId,isSelected, selectRssSource, loadRssDocument }: Props) => {
 
-    const rssSource = useSelector(getRssSourceById(sourceId));
-    const rssSourceLoaded = useSelector(isRssSourceLoaded(sourceId));
+    // instead of using the mapState we use selector with shallowEqual to avoid
+    // extra rendering of the component
+
+    const rssSource = useSelector(getRssSourceById(sourceId),shallowEqual);
+    const rssSourceLoaded = useSelector(isRssSourceLoaded(sourceId), shallowEqual);
     
-
     const doSelectRssSource = () => {
-        console.log(`select source id ${sourceId}`)
         selectRssSource(sourceId);
         if (rssSource && !rssSourceLoaded) {
             loadRssDocument(rssSource);
@@ -37,25 +34,20 @@ const SourceListItem: React.FC<Props> = ({ sourceId,selectedSourceId, selectRssS
 
     const itemClassName: string = classNames({
         'source-item': true,
-        'selected': rssSource && rssSource?.id === selectedSourceId
+        'selected': isSelected
     });
     const refreshClassName: string = classNames({
         refresh: true,
-        'refresh-pending': rssSource && rssSource.readStatus === RssReadStatus.PENDING,
-        'refresh-error': rssSource && rssSource.readStatus === RssReadStatus.ERROR
+        'refresh-pending': rssSource?.readStatus === RssReadStatus.PENDING,
+        'refresh-error': rssSource?.readStatus === RssReadStatus.ERROR
     });
     const doLoadRssDocument = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation();
-
-        // for now refresh and selection are equivalent : they both triggers the
-        // loadRssDocument action
-        //doSelectRssSource();
         if (rssSource) {
             loadRssDocument(rssSource);
         }
-        //selectRssSource(source.id)
-        //refreshRssDocument(source.id);
     };
+    
     return (
         <div
             className={itemClassName}

@@ -3,7 +3,6 @@ import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from '../store'
 import { getSelectedRssItem } from '../store/rss-source/reducers'
 
-
 const mapState = (state: RootState) => ({
     rssItem: getSelectedRssItem(state)
 })

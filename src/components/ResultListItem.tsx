@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect, ConnectedProps, useSelector } from 'react-redux'
 import { selectRssItem } from '../store/rss-source/actions'
-import { RssItemId, Item } from '../store/rss-source/types'
 import { getRssItemById} from '../store/rss-source/reducers'
 import classNames from 'classnames';
 
