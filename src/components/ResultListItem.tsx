@@ -1,21 +1,22 @@
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux'
+import { connect, ConnectedProps, useSelector } from 'react-redux'
 import { selectRssItem } from '../store/rss-source/actions'
-import { RssItemId, Item } from '../store/rss-source/types'
+import { getRssItemById} from '../store/rss-source/reducers'
 import classNames from 'classnames';
 
 const mapDispatch = {
-    selectItem: (id?: RssItemId) => selectRssItem(id)
+    selectRssItem
 }
 
 const connector = connect(null, mapDispatch);
 type PropsFromRedux = ConnectedProps<typeof connector>
 type Props = PropsFromRedux & {
-    rssItem: Item,
+    itemId: string,
     isSelected: boolean
 }
 
-const ResultListITem: React.FC<Props> = ({ rssItem, isSelected, selectItem }: Props) => {
+const ResultListItem: React.FC<Props> = ({ itemId, isSelected, selectRssItem }: Props) => {
+    const rssItem = useSelector(getRssItemById(itemId));
     const itemClassName = classNames({
         'rss-item': true,
         'selected': isSelected
@@ -24,13 +25,13 @@ const ResultListITem: React.FC<Props> = ({ rssItem, isSelected, selectItem }: Pr
     return (
         <div
             className={itemClassName}
-            onClick={() => selectItem(rssItem.id)}
+            onClick={() => rssItem && selectRssItem(rssItem.id)}
         >
             <small>
-                {rssItem.title}
+                {rssItem && rssItem.title}
             </small>
         </div>
     )
 }
 
-export default connector(ResultListITem)
+export default connector(ResultListItem)

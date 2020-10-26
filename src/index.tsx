@@ -5,6 +5,7 @@ import App from './App';
 import { Provider } from 'react-redux';
 import { store } from './store'
 import { addRssSource } from './store/rss-source/actions';
+import { RssReadStatus } from './store/rss-source/types';
 
 [
   {
@@ -43,7 +44,12 @@ import { addRssSource } from './store/rss-source/actions';
     url: 'http://localhost:3000/test-response/rss-en-continu.xml'
   }
   
-].map(source => store.dispatch(addRssSource(source)));
+].map(source => store.dispatch(addRssSource({
+  ...source,
+  documentInfo: null,
+  loadErrorMessage: null,
+  readStatus: RssReadStatus.IDLE
+})));
 
 
 ReactDOM.render(

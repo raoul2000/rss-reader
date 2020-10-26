@@ -1,15 +1,14 @@
+import { RootState } from '..'
 import {
-    RssSourceState, RssSourceReadStatus, RssActionTypes, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, SET_RSS_DOCUMENT,
-    LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM, RssReadStatus, RssSourceId, ADD_RSS_DOCUMENT_TO_CACHE, REMOVE_RSS_DOCUMENT_FROM_CACHE, RssDocumentCacheItem
+    RssSourceState, RssActionTypes, Item, SELECT_RSS_SOURCE, ADD_RSS_SOURCE, DELETE_RSS_SOURCE, SET_RSS_DOCUMENT,
+    LOAD_RSS_PENDING, LOAD_RSS_SUCCESS, LOAD_RSS_ERROR, SELECT_RSS_ITEM, RssReadStatus, RssSourceId, RssItemId, RssSource
 } from './types'
 
 export const initialState: RssSourceState = {
     rssSources: [],
-    readStatus: undefined,
-    readErrorMessage: undefined,
-    rssDocument: undefined,
-    selectedRssItemId: undefined,
-    rssDocumentCache: []
+    rssItems: [],
+    selectedItemId: null,
+    selectedSourceId: null
 }
 
 export function rssSourceReducer(
@@ -18,118 +17,73 @@ export function rssSourceReducer(
 ): RssSourceState {
     switch (action.type) {
         case SELECT_RSS_SOURCE:
+
             return {
                 ...state,
-                selectedRssItemId: undefined,
-                rssDocumentCache: state.rssDocumentCache.map(item => item.rssSourceId === action.payload.id
-                    ? {
-                        ...item,
-                        selected: true
-                    } : { ...item })
+                selectedSourceId: action.payload.rssSourceId,
+                selectedItemId: action.payload.rssSourceId === state.selectedSourceId ? state.selectedItemId : null
             }
         case ADD_RSS_SOURCE:
             return {
                 ...state,
                 rssSources: [...state.rssSources, action.payload.rssSource],
-                rssDocumentCache: [...state.rssDocumentCache, {
-                    rssSourceId: action.payload.rssSource.id,
-                    rssDocument: null,
-                    readStatus: null,
-                    loadErrorMessage: null,
-                    selected: false
-                }]
             }
         case DELETE_RSS_SOURCE:
             return {
                 ...state,
                 rssSources: state.rssSources.filter(
-                    source => source.id !== action.payload.id
-                )
+                    source => source.id !== action.payload.rssSourceId
+                ).map(source => ({ ...source }))
             }
         case SET_RSS_DOCUMENT:
             return {
                 ...state,
-                rssDocument: action.payload.rssDocument
+                rssSources: state.rssSources.map(source => source.id === action.payload.rssSourceId
+                    ? {
+                        ...source,
+                        document: action.payload.rssDocument
+                    } : { ...source })
             }
         case LOAD_RSS_PENDING:
             return {
                 ...state,
-                readStatus: RssReadStatus.PENDING,
-                readErrorMessage: undefined,
-                rssDocumentCache: state.rssDocumentCache.map(cacheItem => {
-                    if (cacheItem.rssSourceId === action.payload.rssSourceId) {
-                        return {
-                            ...cacheItem,
-                            readStatus: RssReadStatus.PENDING,
-                            loadErrorMessage: null
-                        }
-                    } else {
-                        return {
-                            ...cacheItem
-                        }
-                    }
-                })
+                rssSources: state.rssSources.map(source => source.id === action.payload.rssSourceId
+                    ? {
+                        ...source,
+                        readStatus: RssReadStatus.PENDING
+                    } : { ...source })
             }
         case LOAD_RSS_SUCCESS:
             return {
                 ...state,
-                readStatus: RssReadStatus.SUCCESS,
-                rssDocumentCache: state.rssDocumentCache.map(cacheItem => cacheItem.rssSourceId === action.payload.rssSourceId
+                rssSources: state.rssSources.map(source => source.id === action.payload.rssSourceId
                     ? {
-                        ...cacheItem,
-                        readStatus: RssReadStatus.SUCCESS
-                    }
-                    : {
-                        ...cacheItem
-                    }
-                )
+                        ...source,
+                        readStatus: RssReadStatus.SUCCESS,
+                        documentInfo: {
+                            title: action.payload.document.title,
+                            itemIds: action.payload.document.items.map(item => item.id)
+                        }
+                    } : { ...source }),
+                rssItems: [
+                    ...state.rssItems,
+                    ...action.payload.document.items
+                ]
             }
         case LOAD_RSS_ERROR:
             return {
                 ...state,
-                readStatus: RssReadStatus.ERROR,
-                readErrorMessage: action.payload.message,
-                rssDocumentCache: state.rssDocumentCache.map(cacheItem => cacheItem.rssSourceId === action.payload.rssSourceId
+                rssSources: state.rssSources.map(source => source.id === action.payload.rssSourceId
                     ? {
-                        ...cacheItem,
+                        ...source,
                         readStatus: RssReadStatus.ERROR,
                         loadErrorMessage: action.payload.message
-                    }
-                    : {
-                        ...cacheItem
-                    }
-                )
+                    } : { ...source })
             }
         case SELECT_RSS_ITEM:
             return {
                 ...state,
-                selectedRssItemId: action.payload.id
-            }
-        case ADD_RSS_DOCUMENT_TO_CACHE:
-            let alreadyInCache: boolean = false;
-            const updatedCache: Array<RssDocumentCacheItem> = [...state.rssDocumentCache]
-                .map(item => {
-                    if (item.rssSourceId === action.payload.rssSourceId) {
-                        alreadyInCache = true;
-                        return {
-                            ...item,
-                            rssDocument: action.payload.rssDocument
-                        }
-                    }
-                    return item
-                })
-            if (!alreadyInCache) {
-                updatedCache.push(action.payload)
-            }
-            return {
-                ...state,
-                rssDocumentCache: updatedCache
-            }
-        case REMOVE_RSS_DOCUMENT_FROM_CACHE:
-            return {
-                ...state,
-                rssDocumentCache: [...state.rssDocumentCache]
-                    .filter(item => item.rssSourceId !== action.payload.rssSourceId)
+                selectedItemId: action.payload.itemId
             }
         default:
             return state;
@@ -137,53 +91,74 @@ export function rssSourceReducer(
 }
 
 // Selectors ////////////////////////////////////////////////////////////////////////////////////////////
-
-export const getSelectedRssSource = (state: RssSourceState) => {
-    const { rssDocumentCache } = state;
-    const firstSelectedRssItem = rssDocumentCache.find(item => item.selected === true) || null;
-    if(firstSelectedRssItem) {
-        const source = getRssSourceById(state, firstSelectedRssItem.rssSourceId);
-        return source || null
-    }
-    return null;
-}
-export const getRssSourceById = (state: RssSourceState, sourceId: RssSourceId) => {
-    const { rssSources } = state;
-    if (rssSources && sourceId) {
-        return rssSources.find(source => source.id === sourceId);
-    }
-    return null;
-}
-export const getRssItemById = (state: RssSourceState) => {
-    const { rssDocument, selectedRssItemId } = state;
-    if (rssDocument && rssDocument.items && selectedRssItemId) {
-        return rssDocument.items.find(item => item.id === selectedRssItemId)
-    }
-    return null;
+/**
+ * Returns TRUE if a given source is loaded given its Id, FALSE otherwise
+ * @param id the source Id
+ */
+export const isRssSourceLoaded = (id: RssSourceId) => (state: RootState): boolean => {
+    const source = getRssSourceById(id)(state);
+    return source?.documentInfo ? true : false;
 }
 /**
- * Returns the Document for a given RSS Source or NULL if this Document has not been loaded
- * 
- * @param state the current state
- * @param rssSourceId the Rss Source Id
+ * Returns an `RssSource` object given its Id, or *undefined* if no such RSS source could be found
+ * @param id the source Id
  */
-export const getRssDocumentFromCache = (state: RssSourceState, rssSourceId: RssSourceId): RssDocumentCacheItem | null => {
-    const { rssDocumentCache } = state;
-    return rssDocumentCache.find(item => item.rssSourceId === rssSourceId) || null;
+export const getRssSourceById = (id: RssSourceId) => (state: RootState): RssSource | undefined => {
+    return state.rssSource.rssSources.find(source => source.id === id)
 }
-
-export const getSelectedRssDocument = (state: RssSourceState): RssDocumentCacheItem | null => {
-    const { rssDocumentCache } = state;
-    return rssDocumentCache.find(item => item.selected === true) || null;
+/**
+ * Returns an `Item` object given its Id, or *undefined* if no such RSS item could be found, for example
+ * if the parent RSS Source as not been loaded
+ * @param itemId the Rss Item Id
+ */
+export const getRssItemById = (itemId: RssItemId) => (state: RootState): Item | undefined => {
+    return state.rssSource.rssItems.find(item => item.id === itemId);
 }
-
-export const getRssDocumentsReadStatus = (state: RssSourceState): Array<RssSourceReadStatus> => {
-    const { rssDocumentCache } = state;
-    if (rssDocumentCache) {
-        return rssDocumentCache.map(item => ({
-            sourceId: item.rssSourceId,
-            status: item.readStatus
-        }));
+/**
+ * Returns the list of RSS Item ids for a given RSS Source. If the source as not been loaded
+ * returns an empty array
+ * @param sourceId a list of Rss Item ids
+ */
+export const getRssItemIdsBySourceId = (sourceId: RssSourceId) => (state: RootState): RssItemId[] => {
+    const rssSource = getRssSourceById(sourceId)(state);
+    if (rssSource) {
+        return rssSource.documentInfo?.itemIds || []
     }
     return [];
+}
+/**
+ * Returns a list of all `Item` object for a given source. If the source has not been successfully loaded
+ * this selector returns an empty array
+ * @param sourceId the RSS source Id
+ */
+export const getRssItemsBySourceId = (sourceId: RssSourceId) => (state: RootState): Item[] => {
+    const rssItemIds = getRssItemIdsBySourceId(sourceId)(state);
+    const result: Item[] = [];
+    rssItemIds.forEach(rssItemId => {
+        const item = getRssItemById(rssItemId)(state);
+        if (item) {
+            result.push(item);
+        }
+    });
+    return result;
+}
+/**
+ * Returns a list of RSS Items for the selected RSS source. An empty array is returned
+ * if no source is selected
+ * @param state the current state
+ */
+export const getRssItemsForSelectedSource = (state: RootState): Item[] => {
+    if (state.rssSource.selectedSourceId) {
+        return getRssItemsBySourceId(state.rssSource.selectedSourceId)(state);
+    }
+    return [];
+}
+/**
+ * Returns the selected RSS Item or *undefined* if no item is selected
+ * @param state the current state
+ */
+export const getSelectedRssItem = (state: RootState): Item | undefined => {
+    if (state.rssSource.selectedItemId) {
+        return getRssItemById(state.rssSource.selectedItemId)(state);
+    }
 }
