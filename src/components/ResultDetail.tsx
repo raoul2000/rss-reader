@@ -17,6 +17,9 @@ export const ResultDetail: React.FC<Props> = ({rssItem}:Props) => {
             {rssItem &&
                 <article>
                     <h1>{rssItem.title}</h1>
+                    { rssItem.imageUrl && 
+                        <img src={rssItem.imageUrl} alt="illustration" />
+                    }
                     <p>{rssItem.content}</p>
                     <footer>
                         <a href={rssItem.link} target="_blank" rel="noopener noreferrer">lire ...</a> | <span>{rssItem.pubDate}</span>
@@ -26,6 +29,5 @@ export const ResultDetail: React.FC<Props> = ({rssItem}:Props) => {
         </div>
     )
 }
-
 
 export default connector(ResultDetail)

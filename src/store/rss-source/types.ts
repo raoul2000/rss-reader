@@ -91,6 +91,7 @@ export interface Item {
     content?: string;
     link?: string;
     pubDate?: string;
+    imageUrl?: string
 }
 
 export interface RssSourceState {

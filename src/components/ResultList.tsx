@@ -16,7 +16,6 @@ type Props = PropsFromRedux
 const ResultList: React.FC<Props> = ({rssItems, selectedItemId}:Props) => {
     return (
         <div id="resultList">
-            <div>{rssItems.length} items</div>
             <div className="resultListItems">
                 {
                     rssItems.map( item => (
@@ -28,6 +27,7 @@ const ResultList: React.FC<Props> = ({rssItems, selectedItemId}:Props) => {
                     ))
                 }
             </div>
+            <div>{rssItems.length} items</div>
         </div>
     )
 }

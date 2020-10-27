@@ -1,35 +1,61 @@
 import Parser from 'rss-parser';
-import { RssDocument, Item, RssSourceId } from '../store/rss-source/types'
-import md5 from 'blueimp-md5';
+import { RssDocument, Item } from '../store/rss-source/types'
+import uuid from 'uuid-random';
 
-const normalizeRssItem = (item: Parser.Item, sourceId: RssSourceId): Item => ({
-    id: md5(sourceId + (item.guid || item.id)),
+const getContent = (item: Parser.Item): string | undefined => {
+    if(item.contentSnippet) {
+        return item.contentSnippet;
+    }
+    if(item.content) {
+        return item.content;
+    }
+    return 'no content available';
+}
+const getMainImageUrl = (item: Parser.Item): string | undefined => {
+    if(item.mediaContent?.$?.url ){
+        return item.mediaContent.$.url
+    }
+    if( item.enclosure?.url && item.enclosure?.type && item.enclosure?.type.startsWith('image/')) {
+        return item.enclosure.url;
+    }
+}
+const normalizeRssItem = (item: Parser.Item): Item => ({
+    id: uuid(),
     title: item.title,
-    content: item.content,
+    content: getContent(item),
     link: item.link,
-    pubDate: item.pubDate
+    pubDate: item.pubDate,
+    imageUrl: getMainImageUrl(item)
 })
 
-const normalizeRssItems = (sourceId: RssSourceId, items?: Parser.Item[]): Item[] => {
+const normalizeRssItems = (items?: Parser.Item[]): Item[] => {
     if (!items || !Array.isArray(items)) {
         return [];
     }
     return items
-        .map(item => normalizeRssItem(item, sourceId))
+        .map(item => normalizeRssItem(item))
         .filter(item => item)
 }
 
-export const normalizeRssDocument = (sourceId: RssSourceId) => (doc: Parser.Output): RssDocument => {
-
-    const normalizedItems = normalizeRssItems(sourceId, doc.items);
-
+export const normalizeRssDocument = (doc: Parser.Output): RssDocument => {
+    const normalizedItems = normalizeRssItems(doc.items);
+    debugger;
     return {
         title: doc.title,
         items: normalizedItems, // TODO: remove this
     }
 }
 
-export const fetchRssDocument = (url: string): Promise<Parser.Output> => {
-    const rssParser = new Parser();
+export const fetchRssDocument = (url: string): Promise<RssDocument > => {
+    const rssParser = new Parser({
+        customFields: {
+            //feed: ['extendedDescription'],
+            item: [
+                ['media:content', 'mediaContent'],
+                ['enclosure']
+            ],
+        }
+    });
     return rssParser.parseURL(url)
+        .then(normalizeRssDocument);
 }
