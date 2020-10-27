@@ -9,24 +9,24 @@ import { RssReadStatus } from './store/rss-source/types';
 
 [
   {
-    id: 'une-societe',
-    label: 'La Une Societe',
-    url: 'http://localhost:3000/test-response/rss_full_societe.xml'
+    id: 'actu-une',
+    label: 'Actualité - La Une',
+    url: 'https://www.lemonde.fr/rss/une.xml'
   },
   {
-    id: 'une-planete',
-    label: 'La Une Planete',
-    url: 'http://localhost:3000/test-response/rss_full_planete.xml'
+    id: 'france-politique',
+    label: 'France -Politique',
+    url: 'https://www.lemonde.fr/politique/rss_full.xml'
   },
   {
-    id: 'une-sport',
-    label: 'La Une Sport',
-    url: 'http://localhost:3000/test-response/rss_full_sport.xml'
+    id: 'sciences-une',
+    label: 'Sciences - La Une',
+    url: 'https://www.lemonde.fr/sciences/rss_full.xml'
   },
   {
-    id: 'une-politique',
-    label: 'La Une Politique',
-    url: 'http://localhost:3000/test-response/rss_full_politique.xml'
+    id: 'une-libe',
+    label: 'La Une Libé',
+    url: 'http://rss.liberation.fr/rss/latest/'
   },
   {
     id: 'une-div',
@@ -39,13 +39,14 @@ import { RssReadStatus } from './store/rss-source/types';
     url: 'http://localhost:3000/test-response/libe_1.xml'
   },
   {
-    id: 'ofr-1',
+    id: 'ofr-une',
     label: 'Ouest France A la Une',
-    url: 'http://localhost:3000/test-response/rss-en-continu.xml'
+    url: 'https://www.ouest-france.fr/rss-en-continu.xml'
   }
   
 ].map(source => store.dispatch(addRssSource({
   ...source,
+  url: `https://yacdn.org/proxy/${source.url}`, // alternative : https://cors-anywhere.herokuapp.com/
   documentInfo: null,
   loadErrorMessage: null,
   readStatus: RssReadStatus.IDLE
