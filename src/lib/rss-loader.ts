@@ -1,6 +1,7 @@
 import Parser from 'rss-parser';
 import { RssDocument, Item } from '../store/rss-source/types'
 import uuid from 'uuid-random';
+import {fetchViaProxy} from './fetch';
 
 const getContent = (item: Parser.Item): string | undefined => {
     if(item.contentSnippet) {
@@ -39,7 +40,7 @@ const normalizeRssItems = (items?: Parser.Item[]): Item[] => {
 
 export const normalizeRssDocument = (doc: Parser.Output): RssDocument => {
     const normalizedItems = normalizeRssItems(doc.items);
-    debugger;
+    //debugger;
     return {
         title: doc.title,
         items: normalizedItems, // TODO: remove this
@@ -56,6 +57,28 @@ export const fetchRssDocument = (url: string): Promise<RssDocument > => {
             ],
         }
     });
+    return rssParser.parseURL(url)
+        .then(normalizeRssDocument);
+}
+
+export const fetchRssDocument2 = (url: string): Promise<RssDocument > => {
+    const rssParser = new Parser({
+        customFields: {
+            //feed: ['extendedDescription'],
+            item: [
+                ['media:content', 'mediaContent'],
+                ['enclosure']
+            ],
+        }
+    });
+
+    fetchViaProxy('https://www.lemonde.fr/rss/en_continu.xml')
+    .then(result => {
+        debugger;
+        console.log(result);
+    })
+    .catch(console.error);
+
     return rssParser.parseURL(url)
         .then(normalizeRssDocument);
 }
