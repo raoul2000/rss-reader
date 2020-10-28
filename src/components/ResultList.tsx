@@ -27,7 +27,7 @@ const ResultList: React.FC<Props> = ({rssItems, selectedItemId}:Props) => {
                     ))
                 }
             </div>
-            <div>{rssItems.length} items</div>
+            <div className="info-block">{rssItems.length} items</div>
         </div>
     )
 }

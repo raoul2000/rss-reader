@@ -18,7 +18,7 @@
   height: calc(1vh - 100px);
 }
 .body > nav {
-  padding :0.2em;
+  padding :0em;
 }
 
 .source-list {
@@ -29,6 +29,7 @@
   overflow-y: scroll;
   font-size: smaller;
   border-right: 2px solid #f1f1f1;
+  padding-left: 6px;
 }
 
 .source-item {
@@ -49,16 +50,24 @@
   max-width: 20em;
   border-right: 2px solid #f1f1f1;
 }
+
 .source-list .selected,
 .result-list .selected {
   background-color: #b0e6ff;
 }
 .resultListItems {
-  height: calc(100vh - 124px);
+  height: calc(100vh - 82px);
   overflow-y: auto;
+}
+#resultList .info-block {
+  background-color: #f1f1f1;
+  font-size: small;
+  padding:4px;
 }
 .rss-item {
   cursor: pointer;
+  padding-left: 8px;
+  padding-right: 2px;  
   
 }
 .source-item:hover,
