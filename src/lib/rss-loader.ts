@@ -73,9 +73,11 @@ export const fetchRssDocument2 = (url: string): Promise<RssDocument > => {
     });
 
     fetchViaProxy('https://www.lemonde.fr/rss/en_continu.xml')
-    .then(result => {
-        debugger;
-        console.log(result);
+    .then(response => {
+        //debugger;
+        console.log(response);
+        response.text().then(console.log);
+        //console.log(response.text);
     })
     .catch(console.error);
 

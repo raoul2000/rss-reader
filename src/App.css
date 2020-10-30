@@ -12,12 +12,25 @@
   background-color: rgb(241 241 241);
 }
 
-.body {
+header .top-navbar {
+  float:right;
+  margin-right: 1em;
+}
+.rss-reader,
+.about {
   display: flex;
   flex: 1;
   height: calc(1vh - 100px);
 }
-.body > nav {
+
+/* About Page ------------------------------------------*/
+.about .about-main {
+  text-align: center;
+  margin-top:3em;
+  flex:1;
+}
+/* RSS Reader page */
+.rss-reader > nav {
   padding :0em;
 }
 

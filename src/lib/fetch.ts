@@ -5,9 +5,12 @@ const proxyUrl = 'http://s172418307.onlinehome.fr/site/my-proxy/proxy.php';
 
 export const fetchViaProxy = (url:string) => fetch(proxyUrl, {
     method: 'GET',
-    mode: 'no-cors',
     headers: {
+        //'Proxy-Auth': proxyAuthKey,
         'HTTP_PROXY_AUTH': proxyAuthKey,
+        
+        //'Proxy-Target-Url': url
         'HTTP_PROXY_TARGET_URL': url
+        
     }
 });

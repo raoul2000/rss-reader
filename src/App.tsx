@@ -1,53 +1,41 @@
 import React from 'react';
 
 import './App.css';
-import SourceList from './components/SourceList';
-import ResultList from './components/ResultList';
-import ResultDetail  from './components/ResultDetail';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+
+import RssReader from './pages/RssReader'
+import About from './pages/About'
 
 function App() {
   return (
-    <div className="app">
-      <header>
-        RSS Reader
-      </header>
-      <div className="body">
-        <nav className="source-list">
-          <SourceList />
-        </nav>
-        <nav className="result-list">
-          <ResultList />
-        </nav>
-        <main className="result-detail">
-          <ResultDetail />
-        </main>
-      </div>
-      <footer>
-        <span>&nbsp;</span>
-      </footer>
-    </div>
-  );
-  /*   return (
+    <Router>
       <div className="app">
         <header>
-          RSS Reader
+          <Link to="/">RSS Reader</Link>
+
+          <div className="top-navbar">
+            <Link to="/about">About</Link>
+          </div>
         </header>
-        <div className="body">
-          <nav className="source-list">
-            <SourceList />
-          </nav>
-          <nav className="result-list">
-            <ResultList />
-          </nav>
-          <main className="result-detail">
-            <ResultDetail />
-          </main>
-        </div>
+        <Switch>
+          <Route path="/about">
+            <About />
+          </Route>
+          <Route path="/">
+            <RssReader />
+          </Route>
+        </Switch>
         <footer>
           <span>&nbsp;</span>
         </footer>
       </div>
-    ); */
+    </Router>
+  );
 }
 
 export default App;
