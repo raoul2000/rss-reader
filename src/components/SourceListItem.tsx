@@ -5,6 +5,7 @@ import { getRssSourceById, isRssSourceLoaded } from '../store/rss-source/reducer
 import { RssSourceId, RssReadStatus } from '../store/rss-source/types'
 import classNames from 'classnames';
 
+
 const mapDispatch = {
     selectRssSource,
     loadRssDocument

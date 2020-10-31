@@ -2,6 +2,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux'
 import { RootState } from '../store'
 import SourceListItem from './SourceListItem'
+import { ScrollPanel } from 'primereact/scrollpanel';
 
 const mapState = (state: RootState) => ({
     rssSources: state.rssSource.rssSources,
@@ -16,13 +17,15 @@ const SourceList: React.FC<Props> = ({ rssSources, selectedSourceId }: Props) =>
 
     return (
         <div id="sourceList">
-            {rssSources && rssSources.map((source) => (
-                <SourceListItem
-                    key={source.id}
-                    sourceId={source.id}
-                    isSelected={source.id === selectedSourceId}
-                />
-            ))}
+            <ScrollPanel>
+                {rssSources && rssSources.map((source) => (
+                    <SourceListItem
+                        key={source.id}
+                        sourceId={source.id}
+                        isSelected={source.id === selectedSourceId}
+                    />
+                ))}
+            </ScrollPanel>
         </div>
     )
 }

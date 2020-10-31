@@ -1,0 +1,50 @@
+.app-container {
+    display: flex;
+    flex-direction: column;
+}
+.app-container main {
+    flex-grow: 2;
+    display:flex;
+}
+.app-container header {
+    background-color: aqua;
+    padding:1rem;
+    display: flex;
+}
+.app-container header .title {
+    flex-grow: 1;
+}
+
+
+
+
+.app-container footer {
+    background-color: aqua;
+}
+
+.app-container main .left-col {
+    flex-grow:1;
+    background-color: burlywood;
+    min-width:10rem;
+    max-width: 20rem;
+}
+
+.app-container main .left-col .p-accordion .p-accordion-content {
+    padding:0px;
+    margin: 0rem;
+}
+.app-container main .left-col .list-item {
+    padding:1rem;
+}
+.app-container main .left-col .list-item:hover {
+    background-color: aquamarine;
+    cursor: pointer;
+}
+.app-container main .center-col {
+    flex-grow:2;
+    background-color: wheat;
+}
+.app-container main .right-col {
+    flex-grow:4;
+    background-color: turquoise;
+}
